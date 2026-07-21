@@ -1,26 +1,28 @@
 import * as React from "react";
 import {useRef, useState} from "react";
-import {Link} from "react-router";
+import {Link, useNavigate} from "react-router";
 import Button from "@/components/ui/Button.tsx";
 import Input from "@/components/ui/Input.tsx";
+import {registerService} from "@/services/auth.ts";
 
 type FormDataType = {
     name: string,
     email: string,
     password: string,
-    avatar: File | null
+    avatar?: string
 }
 
 const initialData: FormDataType = {
     name: "",
     email: "",
     password: "",
-    avatar: null
+    avatar: ""
 }
 
 const useSignup = () => {
     const [formData, setFormData] = useState<FormDataType>({...initialData});
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const navigate = useNavigate();
 
     const handleChange = (key: keyof FormDataType, value: string | File | null) => {
         setFormData((prev) => ({
@@ -32,10 +34,12 @@ const useSignup = () => {
 
     const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
+        console.log("file", file);
         if (file) {
             const reader = new FileReader();
-            reader.onload = (ev) => handleChange('avatar', ev.target?.result);
+            reader.onload = (ev) => handleChange('avatar', ev.target?.result as string);
             reader.readAsDataURL(file);
+            console.log("reader", reader);
         }
     };
 
@@ -44,12 +48,28 @@ const useSignup = () => {
         if (fileInputRef.current) fileInputRef.current.value = "";
     };
 
-    return {formData, fileInputRef, handleChange, handleAvatarChange, removeAvatar}
+
+    const handleSubmit = async () => {
+        try {
+            const result = await registerService({...formData})
+            if (!result.success) {
+                alert(result.message)
+                return;
+            }
+            alert(result.message)
+            navigate('/login')
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unknow error';
+            alert(message)
+        }
+    }
+
+    return {formData, fileInputRef, handleChange, handleAvatarChange, removeAvatar, handleSubmit}
 }
 
 
 const Signup = () => {
-    const {formData, fileInputRef, handleChange, handleAvatarChange, removeAvatar} = useSignup()
+    const {formData, fileInputRef, handleChange, handleAvatarChange, removeAvatar, handleSubmit} = useSignup()
     return (
         <div className="auth-slide-up">
             <div className="mb-8">
@@ -75,7 +95,7 @@ const Signup = () => {
                     {formData?.avatar ? (
                         <>
                             <img
-                                src={formData?.avatar.webkitRelativePath ?? ""}
+                                src={formData?.avatar ?? ""}
                                 alt="Avatar preview"
                                 className="w-full h-full object-cover"
                             />
@@ -114,6 +134,7 @@ const Signup = () => {
             <form
                 onSubmit={(e) => {
                     e.preventDefault();
+                    handleSubmit()
                 }}
                 className="space-y-1"
             >
