@@ -1,7 +1,7 @@
 import { Outlet } from "react-router";
 import Navbar from "./Navbar";
 
-const AdminLayout = () => {
+const RootLayout = () => {
   return (
     <>
       <Navbar />
@@ -13,4 +13,4 @@ const AdminLayout = () => {
   );
 };
 
-export default AdminLayout;
+export default RootLayout;

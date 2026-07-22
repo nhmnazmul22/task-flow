@@ -6,11 +6,17 @@ import AuthLayout from "@/components/layout/AuthLayout";
 import Signup from "@/pages/Auth/Signup.tsx";
 import Home from "@/pages/Home/Home";
 import AdminLayout from "@/components/layout/AdminLayout";
+import RootLayout from "@/components/layout/RootLayout";
 
 const router = createBrowserRouter([
   {
-    path: "/",
-    Component: Home,
+    Component: RootLayout,
+    children: [
+      {
+        path: "/",
+        Component: Home,
+      },
+    ],
   },
   {
     Component: AuthLayout,
