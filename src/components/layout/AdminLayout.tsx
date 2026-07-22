@@ -1,6 +1,6 @@
 import {Outlet} from "react-router";
 
-const RootLayout = () => {
+const AdminLayout = () => {
     return (
         <div>
             <nav>Navbar</nav>
@@ -13,4 +13,4 @@ const RootLayout = () => {
     );
 };
 
-export default RootLayout;
+export default AdminLayout;
