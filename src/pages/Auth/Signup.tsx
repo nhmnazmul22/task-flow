@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router";
 import Button from "@/components/ui/Button.tsx";
 import Input from "@/components/ui/Input.tsx";
 import { registerService } from "@/services/auth.ts";
+import { Loader2 } from "lucide-react";
 
 type FormDataType = {
   name: string;
@@ -20,6 +21,7 @@ const initialData: FormDataType = {
 };
 
 const useSignup = () => {
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<FormDataType>({ ...initialData });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
@@ -52,6 +54,7 @@ const useSignup = () => {
   };
 
   const handleSubmit = async () => {
+    setLoading(true);
     try {
       const result = await registerService({ ...formData });
       if (!result.success) {
@@ -60,13 +63,17 @@ const useSignup = () => {
       }
       alert(result.message);
       navigate("/login");
+      setFormData({ ...initialData });
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknow error";
       alert(message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return {
+    loading,
     formData,
     fileInputRef,
     handleChange,
@@ -78,6 +85,7 @@ const useSignup = () => {
 
 const Signup = () => {
   const {
+    loading,
     formData,
     fileInputRef,
     handleChange,
@@ -226,7 +234,13 @@ const Signup = () => {
         </div>
 
         <Button variant="primary" fullWidth type="submit">
-          Create account
+          {loading ? (
+            <>
+              <Loader2 className="animate-spin w-4 h-4" />
+            </>
+          ) : (
+            "Create account"
+          )}
         </Button>
       </form>
 
