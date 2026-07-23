@@ -1,5 +1,5 @@
 import Container from "@/components/common/Container";
-import Logo_Light from "@/components/common/Logo_Light";
+import Logo from "@/components/common/Logo";
 
 const Footer = () => {
   return (
@@ -7,7 +7,7 @@ const Footer = () => {
       <Container>
         <div className="py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="md:col-span-1">
-            <Logo_Light isAnimated={false} />
+            <Logo />
             <p className="mt-4 text-sm text-slate-400">
               Manage tasks that matter. Streamline your team's workflow with
               powerful project management tools.
@@ -17,12 +17,18 @@ const Footer = () => {
             <h3 className="text-white font-semibold mb-4">Product</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <a href="#features" className="hover:text-white transition-colors">
+                <a
+                  href="#features"
+                  className="hover:text-white transition-colors"
+                >
                   Features
                 </a>
               </li>
               <li>
-                <a href="#pricing" className="hover:text-white transition-colors">
+                <a
+                  href="#pricing"
+                  className="hover:text-white transition-colors"
+                >
                   Pricing
                 </a>
               </li>
@@ -85,7 +91,9 @@ const Footer = () => {
           </div>
         </div>
         <div className="border-t border-slate-800 py-6 text-sm text-slate-500 text-center">
-          <p>&copy; {new Date().getFullYear()} TaskFlow. All rights reserved.</p>
+          <p>
+            &copy; {new Date().getFullYear()} TaskFlow. All rights reserved.
+          </p>
         </div>
       </Container>
     </footer>
