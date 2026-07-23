@@ -4,8 +4,16 @@ import Button from "@/components/ui/Button";
 
 const Hero = () => {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-500/10 via-transparent to-transparent" />
+    <section className="relative overflow-hidden bg-linear-to-br from-emerald-800 via-emerald-900 to-emerald-800 text-white">
+      {/* Grid pattern */}
+      <div
+        className="absolute inset-0 opacity-[0.06]"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(255,255,255,.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.5) 1px, transparent 1px)",
+          backgroundSize: "48px 48px",
+        }}
+      />
       <Container className="relative py-24 md:py-32">
         <div className="max-w-3xl mx-auto text-center">
           <span className="inline-block px-4 py-1.5 text-xs font-medium bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20 mb-6">
@@ -14,7 +22,7 @@ const Hero = () => {
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-tight">
             Manage projects.
             <br />
-            <span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
               Ship faster.
             </span>
           </h1>
@@ -25,12 +33,12 @@ const Hero = () => {
           </p>
           <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/signup">
-              <Button variant="success" size="lg">
+              <Button size="lg">
                 Start for Free
               </Button>
             </Link>
             <a href="#how-it-works">
-              <Button variant="outline" size="lg" className="border-slate-600 text-white hover:bg-white/5 hover:border-slate-500">
+              <Button variant="outline" size="lg">
                 See How It Works
               </Button>
             </a>
