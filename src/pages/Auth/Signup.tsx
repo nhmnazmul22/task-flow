@@ -5,15 +5,10 @@ import Button from "@/components/ui/Button.tsx";
 import Input from "@/components/ui/Input.tsx";
 import { registerService } from "@/services/auth.ts";
 import { Loader2 } from "lucide-react";
+import { registerSchema, type registerDataType } from "@/types/auth";
+import { validateData } from "@/lib/validation";
 
-type FormDataType = {
-  name: string;
-  email: string;
-  password: string;
-  avatar?: string;
-};
-
-const initialData: FormDataType = {
+const initialData: registerDataType = {
   name: "",
   email: "",
   password: "",
@@ -22,12 +17,14 @@ const initialData: FormDataType = {
 
 const useSignup = () => {
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState<FormDataType>({ ...initialData });
+  const [formData, setFormData] = useState<registerDataType>({
+    ...initialData,
+  });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
   const handleChange = (
-    key: keyof FormDataType,
+    key: keyof registerDataType,
     value: string | File | null,
   ) => {
     setFormData((prev) => ({
@@ -52,11 +49,19 @@ const useSignup = () => {
     handleChange("avatar", null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
-
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const result = await registerService({ ...formData });
+      const validatedData = validateData(registerSchema, {
+        ...formData,
+      });
+
+      if (!validatedData.success || !validatedData.data) {
+        alert(validatedData.errors || "Unknown errors");
+        return;
+      }
+
+      const result = await registerService(validatedData.data);
       if (!result.success) {
         alert(result.message);
         return;

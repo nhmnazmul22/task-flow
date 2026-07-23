@@ -1,11 +1,6 @@
 import { supabase } from "@/config/supabaseConfig";
+import type { registerDataType } from "@/types/auth";
 
-export type payloadType = {
-  name: string;
-  email: string;
-  password: string;
-  avatar?: string;
-};
 
 export type ResponseType = {
   success: boolean;
@@ -14,7 +9,7 @@ export type ResponseType = {
 };
 
 export const registerService = async (
-  payload: payloadType,
+  payload: registerDataType,
 ): Promise<ResponseType> => {
   const { data, error } = await supabase.auth.signUp({
     email: payload.email,
