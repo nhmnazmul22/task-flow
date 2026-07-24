@@ -1,7 +1,6 @@
 import { supabase } from "@/config/supabaseConfig";
 import type { registerDataType } from "@/types/auth";
 
-
 export type ResponseType = {
   success: boolean;
   message: string;
@@ -22,8 +21,6 @@ export const registerService = async (
     },
   });
 
-  console.log("Register Response:", data, error);
-
   if (error) {
     return {
       success: false,
@@ -32,7 +29,8 @@ export const registerService = async (
   }
 
   return {
-    success: false,
+    success: true,
     message: "Register successful",
+    data: data,
   };
 };

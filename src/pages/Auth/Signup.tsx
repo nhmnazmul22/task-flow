@@ -7,6 +7,7 @@ import { registerService } from "@/services/auth.ts";
 import { Loader2 } from "lucide-react";
 import { registerSchema, type registerDataType } from "@/types/auth";
 import { validateData } from "@/lib/validation";
+import { toast } from "@/components/ui/Toast";
 
 const initialData: registerDataType = {
   name: "",
@@ -41,7 +42,6 @@ const useSignup = () => {
       reader.onload = (ev) =>
         handleChange("avatar", ev.target?.result as string);
       reader.readAsDataURL(file);
-      console.log("reader", reader);
     }
   };
 
@@ -49,6 +49,7 @@ const useSignup = () => {
     handleChange("avatar", null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
+
   const handleSubmit = async () => {
     setLoading(true);
     try {
@@ -57,21 +58,23 @@ const useSignup = () => {
       });
 
       if (!validatedData.success || !validatedData.data) {
-        alert(validatedData.errors || "Unknown errors");
+        toast.error("Validation Error", {
+          description: validatedData.errors?.formErrors.join("\n"),
+        });
         return;
       }
 
       const result = await registerService(validatedData.data);
       if (!result.success) {
-        alert(result.message);
+        toast.error(result.message);
         return;
       }
-      alert(result.message);
+      toast.success(result.message);
       navigate("/login");
       setFormData({ ...initialData });
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknow error";
-      alert(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
