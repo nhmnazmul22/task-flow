@@ -28,10 +28,14 @@
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
+    "moduleResolution": "nodenext",
     "skipLibCheck": true,
 
     "rewriteRelativeImportExtensions": true,
     "erasableSyntaxOnly": true,
-    "noEmit": true
+    "noEmit": true,
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   }
 }
