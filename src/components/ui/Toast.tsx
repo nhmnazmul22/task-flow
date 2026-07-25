@@ -25,7 +25,6 @@ function notify() {
 }
 
 function subscribe(listener: Listener) {
-  console.log("listener", listener);
   listeners.add(listener);
   return () => listeners.delete(listener);
 }
