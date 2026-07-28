@@ -14,7 +14,7 @@ export const registerService = async (
   const data: UserSchemaType = {
     fullName: payload.fullName,
     email: payload.email,
-    role: "admin",
+    role: "user",
     isVerified: false,
     password: hashedPassword,
   };
