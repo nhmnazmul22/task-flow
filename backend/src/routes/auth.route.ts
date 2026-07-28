@@ -6,7 +6,7 @@ import { registerValidationSchema } from "@/validations/auth.validation.js";
 
 const authRouter = Router();
 
-authRouter.get(
+authRouter.post(
   "/register",
   validationMiddleware(registerValidationSchema),
   asyncHandler(UserController.RegisterController),
