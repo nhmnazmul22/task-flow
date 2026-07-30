@@ -2,7 +2,8 @@ import type { Request, Response } from "express";
 import * as AuthServices from "@/services/auth.service.js";
 
 export const RegisterController = async (req: Request, res: Response) => {
-  const result = await AuthServices.registerService(req, req.body);
+  console.log(req.files);
+  const result = await AuthServices.registerService({...req.body, files: req.files});
 
   return res.json({
     success: true,

@@ -10,19 +10,7 @@ export function uploadFile(req: Request, folder = "images"): Promise<string> {
     });
 
     bb.on("file", (name, file, info) => {
-      const filename = `${Date.now()}-${info.filename}`;
-      const relativePath = `/uploads/${folder}/${filename}`;
-      const absolutePath = path.join(process.cwd(), "public", relativePath);
-
-      const writeStream = fs.createWriteStream(absolutePath);
-
-      file.pipe(writeStream);
-
-      writeStream.on("finish", () => {
-        resolve(relativePath);
-      });
-
-      writeStream.on("error", reject);
+      
     });
 
     bb.on("error", reject);

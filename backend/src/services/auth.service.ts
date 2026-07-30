@@ -1,14 +1,9 @@
 import bcrypt from "bcryptjs";
 import type { registerDataType } from "@/validations/auth.validation.js";
-import { uploadFile } from "@/utils/upload.js";
-import type { Request } from "express";
 import type { UserSchemaType } from "@/types/users.js";
 import * as UserRepository from "@/repositories/user.repo.js";
 
-export const registerService = async (
-  req: Request,
-  payload: registerDataType,
-) => {
+export const registerService = async (payload: registerDataType) => {
   const hashedPassword = await bcrypt.hash(payload.password, 10);
 
   const data: UserSchemaType = {
@@ -19,11 +14,12 @@ export const registerService = async (
     password: hashedPassword,
   };
 
-  if (payload.avatar) {
-    const filePath = await uploadFile(req, "avatar");
-    if (filePath) {
-      data.avatarUrl = filePath;
-    }
+  if (
+    payload.files &&
+    Array.isArray(payload.files?.avatar) &&
+    payload.files?.avatar?.length > 0
+  ) {
+    data.avatarUrl = payload.files?.avatar[0]?.path ?? "";
   }
 
   // Send email for verification

@@ -19,7 +19,7 @@ export function errorHandler(
     return res.status(400).json({
       success: false,
       message: "Validation error",
-      errors: z.flattenError(err).fieldErrors,
+      errors: z.flattenError(err),
     });
   }
 
@@ -39,6 +39,6 @@ export function errorHandler(
 
   return res.status(500).json({
     success: false,
-    message: "Internal Server Error",
+    message: err.message ?? "Internal Server Error",
   });
 }
