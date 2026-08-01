@@ -25,6 +25,7 @@ const connectToDatabase = async () => {
 
     cached.conn = await cached.promise;
 
+    console.log("Connected to MongoDB");
     return cached.conn;
   } catch (error) {
     console.error("Error connecting to MongoDB:", error);
