@@ -1,5 +1,5 @@
 import type { UserSchemaType } from "@/types/users.js";
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Model, Schema } from "mongoose";
 
 const UserSchema = new Schema<UserSchemaType>(
   {
@@ -45,6 +45,7 @@ const UserSchema = new Schema<UserSchemaType>(
   },
 );
 
-const UserModel = mongoose.model("User", UserSchema);
+const UserModel =
+  mongoose.models.User || mongoose.model<UserSchemaType>("User", UserSchema);
 
 export default UserModel;

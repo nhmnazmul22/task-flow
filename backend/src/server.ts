@@ -1,6 +1,13 @@
 import app from "./app.ts";
-import appConfig from "@/config/appConfig.js";
+import appConfig from "@/config/app.js";
+import connectToDatabase from "@/lib/mongodb.js";
 
-app.listen(appConfig.PORT, () => {
-  console.log(`Server running on PORT: ${appConfig.PORT}`);
-});
+const startServer = async () => {
+  await connectToDatabase();
+
+  app.listen(appConfig.PORT, () => {
+    console.log(`Server running on PORT: ${appConfig.PORT}`);
+  });
+};
+
+startServer();
