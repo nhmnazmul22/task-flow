@@ -1,6 +1,14 @@
+import type { QueryFilter } from "mongoose";
 import UserModel from "@/models/users.model.js";
 import type { UserSchemaType } from "@/types/users.js";
 
 export const createNewUser = async (data: UserSchemaType) => {
-  return await UserModel.create(data);
+  const newUser = await UserModel.create(data);
+  return newUser;
+};
+
+export const findOneByQuery = async (
+  query?: Record<string, string>,
+): Promise<UserSchemaType | null> => {
+  return UserModel.findOne(query as any);
 };

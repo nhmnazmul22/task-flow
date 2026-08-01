@@ -2,8 +2,17 @@ import bcrypt from "bcryptjs";
 import type { registerDataType } from "@/validations/auth.validation.js";
 import type { UserSchemaType } from "@/types/users.js";
 import * as UserRepository from "@/repositories/user.repo.js";
+import { AppError } from "@/errors/appError.js";
 
 export const registerService = async (payload: registerDataType) => {
+  const existUser = await UserRepository.findOneByQuery({
+    email: payload.email,
+  });
+
+  if (existUser) {
+    throw new AppError(400, "Email already register with another account");
+  }
+
   const hashedPassword = await bcrypt.hash(payload.password, 10);
 
   const data: UserSchemaType = {
@@ -21,8 +30,6 @@ export const registerService = async (payload: registerDataType) => {
   ) {
     data.avatarUrl = payload.files?.avatar[0]?.path ?? "";
   }
-
-  // Send email for verification
 
   return await UserRepository.createNewUser(data);
 };
