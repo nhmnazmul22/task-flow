@@ -1,20 +1,20 @@
-import busboy from "busboy";
-import fs from "node:fs";
+import fs from "node:fs/promises";
 import path from "node:path";
-import type { Request } from "express";
 
-export function uploadFile(req: Request, folder = "images"): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const bb = busboy({
-      headers: req.headers,
-    });
+export const removeFile = async (relativePath: string) => {
+  const filePath = path.join(process.cwd(), "public", relativePath);
 
-    bb.on("file", (name, file, info) => {
-      
-    });
+  try {
+    await fs.unlink(filePath);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
+      throw error;
+    }
+  }
+};
 
-    bb.on("error", reject);
-
-    req.pipe(bb);
-  });
-}
+export const removeFiles = async (relativePaths: string[]) => {
+  await Promise.all(
+    relativePaths.map((relativePath) => removeFile(relativePath)),
+  );
+};

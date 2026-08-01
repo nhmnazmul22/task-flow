@@ -1,6 +1,6 @@
-import { Router, type Request, type Response } from "express";
+import { Router } from "express";
 import * as UserController from "@/controllers/auth.controller.js";
-import { asyncHandler, validate } from "@/utils/index.js";
+import { asyncHandler } from "@/utils/index.js";
 import { validationMiddleware } from "@/middlewares/validation.middleware.js";
 import { registerValidationSchema } from "@/validations/auth.validation.js";
 import { multipartParser } from "@/middlewares/multipartParser.middleware.js";
@@ -11,7 +11,7 @@ authRouter.post(
   "/register",
   multipartParser,
   validationMiddleware(registerValidationSchema),
-  asyncHandler(UserController.RegisterController),
+  asyncHandler(UserController.Register),
 );
 
 export default authRouter;
