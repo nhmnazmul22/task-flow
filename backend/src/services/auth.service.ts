@@ -11,7 +11,7 @@ import { generateToken } from "@/lib/token.js";
 import type { Response } from "express";
 import { saveCookie } from "@/utils/cookies.js";
 
-export const registerService = async (payload: registerDataType) => {
+export const register = async (payload: registerDataType) => {
   let uploadedFiles: string[] = [];
   try {
     let avatarUrl = "";
@@ -51,7 +51,7 @@ export const registerService = async (payload: registerDataType) => {
   }
 };
 
-export const loginService = async (res: Response, payload: loginDataType) => {
+export const login = async (res: Response, payload: loginDataType) => {
   const user = await UserRepository.findOneByQuery({
     email: payload.email,
   });
@@ -79,4 +79,12 @@ export const loginService = async (res: Response, payload: loginDataType) => {
   return {
     token,
   };
+};
+
+export const getProfile = async (userId: string) => {
+  const user = await UserRepository.findUserById(userId);
+  if (!user) {
+    throw new AppError(404, "User not found");
+  }
+  return user;
 };

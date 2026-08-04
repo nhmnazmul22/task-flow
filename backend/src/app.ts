@@ -1,7 +1,7 @@
 import express, { type Express } from "express";
 import { authRouter } from "@/routes/index.js";
 import { errorHandler } from "@/middlewares/error.middleware.js";
-
+import cookieParser from "cookie-parser";
 
 const app: Express = express();
 
@@ -11,6 +11,7 @@ const app: Express = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
+app.use(cookieParser());
 
 /**
  * Routes

@@ -1,7 +1,7 @@
 import appConfig from "@/config/app.js";
 import jwt from "jsonwebtoken";
 
-type TokenPayloadType = {
+export type TokenPayloadType = {
   userId: string;
   email: string;
   role: string;

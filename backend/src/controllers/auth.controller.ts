@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import * as AuthServices from "@/services/auth.service.js";
 
 export const Register = async (req: Request, res: Response) => {
-  const result = await AuthServices.registerService({
+  const result = await AuthServices.register({
     ...req.body,
     files: req.files,
   });
@@ -15,7 +15,7 @@ export const Register = async (req: Request, res: Response) => {
 };
 
 export const Login = async (req: Request, res: Response) => {
-  const result = await AuthServices.loginService(res, req.body);
+  const result = await AuthServices.login(res, req.body);
 
   return res.json({
     success: true,
@@ -30,5 +30,15 @@ export const Logout = async (req: Request, res: Response) => {
   return res.json({
     success: true,
     message: "Logout successful",
+  });
+};
+
+export const Profile = async (req: Request, res: Response) => {
+  const user = await AuthServices.getProfile(req?.authInfo?.userId ?? "");
+
+  return res.json({
+    success: true,
+    message: "Profile retrieved successfully",
+    data: user,
   });
 };

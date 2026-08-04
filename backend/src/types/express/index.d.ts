@@ -11,9 +11,15 @@ declare global {
       size: number;
       path: string;
     }
+    interface TokenPayloadType {
+      userId: string;
+      email: string;
+      role: string;
+    }
 
     interface Request {
       files?: Record<string, UploadedFile[]>;
+      authInfo?: TokenPayloadType;
     }
   }
 }

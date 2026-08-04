@@ -7,6 +7,7 @@ import {
   registerValidationSchema,
 } from "@/validations/auth.validation.js";
 import { multipartParser } from "@/middlewares/multipartParser.middleware.js";
+import authMiddleware from "@/middlewares/auth.middleware.js";
 
 const authRouter = Router();
 
@@ -23,5 +24,7 @@ authRouter.post(
 );
 
 authRouter.post("/logout", asyncHandler(UserController.Logout));
+
+authRouter.get("/me", authMiddleware, asyncHandler(UserController.Profile));
 
 export default authRouter;
