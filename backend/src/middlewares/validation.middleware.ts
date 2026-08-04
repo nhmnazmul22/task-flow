@@ -1,5 +1,5 @@
 import type { NextFunction, Request, RequestHandler, Response } from "express";
-import type z from "zod";
+import z from "zod";
 
 export const validationMiddleware =
   <T extends z.ZodType>(schema: T): RequestHandler =>
