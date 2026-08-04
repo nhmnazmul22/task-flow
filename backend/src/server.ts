@@ -1,3 +1,4 @@
+import "dotenv/config.js";
 import app from "./app.ts";
 import appConfig from "@/config/app.js";
 import connectToDatabase from "@/lib/mongodb.js";

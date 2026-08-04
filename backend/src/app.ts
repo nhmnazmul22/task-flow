@@ -2,6 +2,7 @@ import express, { type Express } from "express";
 import { authRouter } from "@/routes/index.js";
 import { errorHandler } from "@/middlewares/error.middleware.js";
 
+
 const app: Express = express();
 
 /**
