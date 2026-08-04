@@ -10,11 +10,13 @@ export const createNewUser = async (data: UserSchemaType) => {
 export const findOneByQuery = async (
   query?: Record<string, string>,
 ): Promise<UserModelSchema | null> => {
-  return await UserModel.findOne(query as any);
+  return await UserModel.findOne(query as any).exec();
 };
 
 export const findUserById = async (
   id: string,
 ): Promise<UserModelSchema | null> => {
-  return await UserModel.findById(new mongoose.Types.ObjectId(id), {password: 0});
+  return await UserModel.findById(new mongoose.Types.ObjectId(id), {
+    password: 0,
+  }).exec();
 };
