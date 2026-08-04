@@ -8,3 +8,7 @@ export interface UserSchemaType {
   createdAt?: Date;
   updatedAt?: Date;
 }
+
+export interface UserModelSchema extends UserSchemaType {
+  _id: string;
+}

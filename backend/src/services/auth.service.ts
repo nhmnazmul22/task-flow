@@ -1,9 +1,15 @@
 import bcrypt from "bcryptjs";
-import type { registerDataType } from "@/validations/auth.validation.js";
+import type {
+  loginDataType,
+  registerDataType,
+} from "@/validations/auth.validation.js";
 import type { UserSchemaType } from "@/types/users.js";
 import * as UserRepository from "@/repositories/user.repo.js";
 import { AppError } from "@/errors/appError.js";
 import { removeFiles } from "@/utils/upload.js";
+import { generateToken } from "@/lib/token.js";
+import type { Response } from "express";
+import { saveCookie } from "@/utils/cookies.js";
 
 export const registerService = async (payload: registerDataType) => {
   let uploadedFiles: string[] = [];
@@ -43,4 +49,34 @@ export const registerService = async (payload: registerDataType) => {
     }
     throw error;
   }
+};
+
+export const loginService = async (res: Response, payload: loginDataType) => {
+  const user = await UserRepository.findOneByQuery({
+    email: payload.email,
+  });
+
+  if (!user) {
+    throw new AppError(401, "Unauthorized");
+  }
+
+  const isPasswordMatch = await bcrypt.compare(payload.password, user.password);
+
+  if (!isPasswordMatch) {
+    throw new AppError(401, "Unauthorized");
+  }
+
+  // Generate the token and return it along with user data
+  const token = generateToken({
+    userId: user._id.toString(),
+    email: user.email,
+    role: user.role,
+  });
+
+  // Set the token in the response header
+  saveCookie(res, "token", token);
+
+  return {
+    token,
+  };
 };

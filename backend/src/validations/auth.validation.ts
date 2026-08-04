@@ -18,3 +18,10 @@ export const registerValidationSchema = z.object({
 });
 
 export type registerDataType = z.infer<typeof registerValidationSchema>;
+
+export const loginValidationSchema = z.object({
+  email: z.email(),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+});
+
+export type loginDataType = z.infer<typeof loginValidationSchema>;
