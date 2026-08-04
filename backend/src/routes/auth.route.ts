@@ -22,4 +22,6 @@ authRouter.post(
   asyncHandler(UserController.Login),
 );
 
+authRouter.post("/logout", asyncHandler(UserController.Logout));
+
 export default authRouter;

@@ -23,3 +23,12 @@ export const Login = async (req: Request, res: Response) => {
     data: result,
   });
 };
+
+export const Logout = async (req: Request, res: Response) => {
+  res.clearCookie("token");
+
+  return res.json({
+    success: true,
+    message: "Logout successful",
+  });
+};
