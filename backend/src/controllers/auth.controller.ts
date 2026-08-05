@@ -1,6 +1,5 @@
 import type { Request, Response } from "express";
 import * as AuthServices from "@/services/auth.service.js";
-import type { MailDataType } from "@/types/auth.js";
 import type { sendVerifyEmailType } from "@/validations/auth.validation.js";
 
 export const register = async (req: Request, res: Response) => {
@@ -47,6 +46,7 @@ export const profile = async (req: Request, res: Response) => {
 
 export const sendVerifyEmail = async (req: Request, res: Response) => {
   const result = await AuthServices.sendMailForVerify(
+    res,
     req.body as sendVerifyEmailType,
   );
 

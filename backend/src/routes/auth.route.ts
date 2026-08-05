@@ -27,7 +27,7 @@ authRouter.post("/logout", asyncHandler(AuthController.logout));
 authRouter.get("/me", authMiddleware, asyncHandler(AuthController.profile));
 
 authRouter.post(
-  "/send-verification-mail",
+  "/send-verification-email",
   validationMiddleware(sendVerifyEmailSchema),
   asyncHandler(AuthController.sendVerifyEmail),
 );
