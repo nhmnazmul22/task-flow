@@ -25,3 +25,10 @@ export const loginValidationSchema = z.object({
 });
 
 export type loginDataType = z.infer<typeof loginValidationSchema>;
+
+export const sendVerifyEmailSchema = z.object({
+  name: z.string().optional(),
+  email: z.email(),
+});
+
+export type sendVerifyEmailType = z.infer<typeof sendVerifyEmailSchema>;

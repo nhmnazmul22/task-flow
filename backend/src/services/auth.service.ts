@@ -12,7 +12,7 @@ import type { Response } from "express";
 import { saveCookie } from "@/utils/cookies.js";
 import { sendMail } from "@/lib/mail.js";
 import emailVerification from "@/templates/emails/verification.js";
-import type { MailDataType } from "@/types/auth.js";
+import type { sendVerifyEmailType } from "@/validations/auth.validation.js";
 
 export const register = async (payload: registerDataType) => {
   let uploadedFiles: string[] = [];
@@ -92,10 +92,10 @@ export const getProfile = async (userId: string) => {
   return user;
 };
 
-export const sendMailForVerify = async ({ name, email }: MailDataType) => {
+export const sendMailForVerify = async ({ name, email }: sendVerifyEmailType) => {
   const html = emailVerification(
-    name,
     `${process.env.FRONTEND_DOMAIN}/verify-email`,
+    name,
   );
   const result = await sendMail(email, "Email Verification", html);
 

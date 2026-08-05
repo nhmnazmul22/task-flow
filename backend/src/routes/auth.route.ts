@@ -5,6 +5,7 @@ import { validationMiddleware } from "@/middlewares/validation.middleware.js";
 import {
   loginValidationSchema,
   registerValidationSchema,
+  sendVerifyEmailSchema,
 } from "@/validations/auth.validation.js";
 import { multipartParser } from "@/middlewares/multipartParser.middleware.js";
 import authMiddleware from "@/middlewares/auth.middleware.js";
@@ -27,6 +28,7 @@ authRouter.get("/me", authMiddleware, asyncHandler(AuthController.profile));
 
 authRouter.post(
   "/send-verification-mail",
+  validationMiddleware(sendVerifyEmailSchema),
   asyncHandler(AuthController.sendVerifyEmail),
 );
 

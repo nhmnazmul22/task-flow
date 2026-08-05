@@ -1,4 +1,4 @@
-const emailVerification = (name: string, verificationUrl: string): string => {
+const emailVerification = (verificationUrl: string, name?: string): string => {
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -23,9 +23,12 @@ const emailVerification = (name: string, verificationUrl: string): string => {
           </tr>
           <tr>
             <td style="padding:20px 40px 30px; color:#52525b; font-size:16px; line-height:1.6;">
-              <p>
+              ${
+                name &&
+                `<p>
                 Hello <strong>${name}</strong>,
-              </p>
+              </p>`
+              }
               <p>
                 Thanks for creating an account with us.
                 Please verify your email address by clicking the button below.
