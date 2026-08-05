@@ -36,11 +36,6 @@ const UserSchema = new Schema<UserSchemaType>(
       type: Boolean,
       default: false,
     },
-    verificationToken: {
-      type: String,
-      required: false,
-      default: null,
-    },
     verifiedAt: {
       type: Date,
       default: null,
