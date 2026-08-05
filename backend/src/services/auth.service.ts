@@ -10,6 +10,9 @@ import { removeFiles } from "@/utils/upload.js";
 import { generateToken } from "@/lib/token.js";
 import type { Response } from "express";
 import { saveCookie } from "@/utils/cookies.js";
+import { sendMail } from "@/lib/mail.js";
+import emailVerification from "@/templates/emails/verification.js";
+import type { MailDataType } from "@/types/auth.js";
 
 export const register = async (payload: registerDataType) => {
   let uploadedFiles: string[] = [];
@@ -87,4 +90,20 @@ export const getProfile = async (userId: string) => {
     throw new AppError(404, "User not found");
   }
   return user;
+};
+
+export const sendMailForVerify = async ({ name, email }: MailDataType) => {
+  const html = emailVerification(
+    name,
+    `${process.env.FRONTEND_DOMAIN}/verify-email`,
+  );
+  const result = await sendMail(email, "Email Verification", html);
+
+  if (result && !result.id) {
+    throw new AppError(500, "Verification mail send failed, try again.");
+  }
+
+  return {
+    emailId: result?.id ?? "",
+  };
 };

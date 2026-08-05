@@ -1,5 +1,5 @@
 import { Router } from "express";
-import * as UserController from "@/controllers/auth.controller.js";
+import * as AuthController from "@/controllers/auth.controller.js";
 import { asyncHandler } from "@/utils/index.js";
 import { validationMiddleware } from "@/middlewares/validation.middleware.js";
 import {
@@ -15,16 +15,19 @@ authRouter.post(
   "/register",
   multipartParser,
   validationMiddleware(registerValidationSchema),
-  asyncHandler(UserController.Register),
+  asyncHandler(AuthController.register),
 );
 authRouter.post(
   "/login",
   validationMiddleware(loginValidationSchema),
-  asyncHandler(UserController.Login),
+  asyncHandler(AuthController.login),
 );
+authRouter.post("/logout", asyncHandler(AuthController.logout));
+authRouter.get("/me", authMiddleware, asyncHandler(AuthController.profile));
 
-authRouter.post("/logout", asyncHandler(UserController.Logout));
-
-authRouter.get("/me", authMiddleware, asyncHandler(UserController.Profile));
+authRouter.post(
+  "/send-verification-mail",
+  asyncHandler(AuthController.sendVerifyEmail),
+);
 
 export default authRouter;

@@ -1,7 +1,8 @@
 import type { Request, Response } from "express";
 import * as AuthServices from "@/services/auth.service.js";
+import type { MailDataType } from "@/types/auth.js";
 
-export const Register = async (req: Request, res: Response) => {
+export const register = async (req: Request, res: Response) => {
   const result = await AuthServices.register({
     ...req.body,
     files: req.files,
@@ -14,7 +15,7 @@ export const Register = async (req: Request, res: Response) => {
   });
 };
 
-export const Login = async (req: Request, res: Response) => {
+export const login = async (req: Request, res: Response) => {
   const result = await AuthServices.login(res, req.body);
 
   return res.json({
@@ -24,7 +25,7 @@ export const Login = async (req: Request, res: Response) => {
   });
 };
 
-export const Logout = async (req: Request, res: Response) => {
+export const logout = async (req: Request, res: Response) => {
   res.clearCookie("token");
 
   return res.json({
@@ -33,12 +34,22 @@ export const Logout = async (req: Request, res: Response) => {
   });
 };
 
-export const Profile = async (req: Request, res: Response) => {
+export const profile = async (req: Request, res: Response) => {
   const user = await AuthServices.getProfile(req?.authInfo?.userId ?? "");
 
   return res.json({
     success: true,
     message: "Profile retrieved successfully",
     data: user,
+  });
+};
+
+export const sendVerifyEmail = async (req: Request, res: Response) => {
+  const result = await AuthServices.sendMailForVerify(req.body as MailDataType);
+
+  return res.json({
+    success: true,
+    message: "Verification mail send successful",
+    data: result,
   });
 };
