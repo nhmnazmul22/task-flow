@@ -28,16 +28,23 @@ const UserSchema = new Schema<UserSchemaType>(
       type: String,
       required: true,
     },
-
-    isVerified: {
-      type: Boolean,
-      default: false,
-    },
-
     avatarUrl: {
       type: String,
       default: null,
     },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: {
+      type: String,
+      required: false,
+      default: null,
+    },
+    verifiedAt: {
+      type: Date,
+      default: null,
+    }
   },
   {
     timestamps: true,

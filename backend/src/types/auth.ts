@@ -1,4 +1,5 @@
-export type MailDataType = {
-  name: string;
+export type TokenPayloadType = {
+  userId: string;
   email: string;
+  role: string;
 };

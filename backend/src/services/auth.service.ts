@@ -92,16 +92,33 @@ export const getProfile = async (userId: string) => {
   return user;
 };
 
-export const sendMailForVerify = async ({ name, email }: sendVerifyEmailType) => {
+export const sendMailForVerify = async (
+  res: Response,
+  { name, email }: sendVerifyEmailType,
+) => {
   const html = emailVerification(
     `${process.env.FRONTEND_DOMAIN}/verify-email`,
     name,
   );
+
   const result = await sendMail(email, "Email Verification", html);
 
   if (result && !result.id) {
     throw new AppError(500, "Verification mail send failed, try again.");
   }
+
+  const token = generateToken(
+    {
+      name,
+      email,
+      emailId: result?.id,
+    },
+    "1h",
+  );
+
+  saveCookie(res, "verification_token", token, {
+    maxAge: Number(process.env.EMAIL_VERIFY_EXPIRE_IN),
+  });
 
   return {
     emailId: result?.id ?? "",

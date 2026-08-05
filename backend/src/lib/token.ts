@@ -1,24 +1,16 @@
 import appConfig from "@/config/app.js";
 import jwt from "jsonwebtoken";
 
-export type TokenPayloadType = {
-  userId: string;
-  email: string;
-  role: string;
-};
 
-export const generateToken = (payload: TokenPayloadType) => {
+export const generateToken = <T extends object>(payload: T, expiresIn: string = '7d') => {
   return jwt.sign(payload, appConfig.JWT.SECRET_KEY, {
-    expiresIn: "7d",
+    expiresIn,
   });
 };
 
-export const verifyToken = (token: string) => {
+export const verifyToken = <T extends object>(token: string) => {
   try {
-    const decoded = jwt.verify(
-      token,
-      appConfig.JWT.SECRET_KEY,
-    ) as TokenPayloadType;
+    const decoded = jwt.verify(token, appConfig.JWT.SECRET_KEY) as T;
     return decoded;
   } catch (error) {
     return null;

@@ -3,8 +3,10 @@ export interface UserSchemaType {
   email: string;
   role: string;
   password: string;
-  isVerified: boolean;
   avatarUrl?: string;
+  isVerified: boolean;
+  verificationToken?: string | null;
+  verifiedAt?: Date | null;
   createdAt?: Date;
   updatedAt?: Date;
 }
