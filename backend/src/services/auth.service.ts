@@ -1,126 +1,150 @@
 import bcrypt from "bcryptjs";
-import type {
-  loginDataType,
-  registerDataType,
-} from "@/validations/auth.validation.js";
-import type { UserSchemaType } from "@/types/users.js";
+import type {loginDataType, registerDataType, sendVerifyEmailType,} from "@/validations/auth.validation.js";
+import type {UserSchemaType} from "@/types/users.js";
 import * as UserRepository from "@/repositories/user.repo.js";
-import { AppError } from "@/errors/appError.js";
-import { removeFiles } from "@/utils/upload.js";
-import { generateToken } from "@/lib/token.js";
-import type { Response } from "express";
-import { saveCookie } from "@/utils/cookies.js";
-import { sendMail } from "@/lib/mail.js";
+import {AppError} from "@/errors/appError.js";
+import {removeFiles} from "@/utils/upload.js";
+import {generateToken, verifyToken} from "@/lib/token.js";
+import type {Request, Response} from "express";
+import {saveCookie} from "@/utils/cookies.js";
+import {sendMail} from "@/lib/mail.js";
 import emailVerification from "@/templates/emails/verification.js";
-import type { sendVerifyEmailType } from "@/validations/auth.validation.js";
+import type {EmailVerificationTokenType} from "@/types/auth.js";
 
 export const register = async (payload: registerDataType) => {
-  let uploadedFiles: string[] = [];
-  try {
-    let avatarUrl = "";
-    if (
-      payload.files &&
-      Array.isArray(payload.files?.avatar) &&
-      payload.files?.avatar?.length > 0
-    ) {
-      avatarUrl = payload.files?.avatar[0]?.path ?? "";
-      uploadedFiles.push(avatarUrl);
+    let uploadedFiles: string[] = [];
+    try {
+        let avatarUrl = "";
+        if (
+            payload.files &&
+            Array.isArray(payload.files?.avatar) &&
+            payload.files?.avatar?.length > 0
+        ) {
+            avatarUrl = payload.files?.avatar[0]?.path ?? "";
+            uploadedFiles.push(avatarUrl);
+        }
+
+        const existUser = await UserRepository.findOneByQuery({
+            email: payload.email,
+        });
+
+        if (existUser) {
+            throw new AppError(400, "Email already register with another account");
+        }
+
+        const hashedPassword = await bcrypt.hash(payload.password, 10);
+        const data: UserSchemaType = {
+            fullName: payload.fullName,
+            email: payload.email,
+            role: "user",
+            isVerified: false,
+            password: hashedPassword,
+            avatarUrl,
+        };
+
+        return await UserRepository.createNewUser(data);
+    } catch (error) {
+        if (uploadedFiles.length > 0) {
+            await removeFiles(uploadedFiles);
+        }
+        throw error;
     }
-
-    const existUser = await UserRepository.findOneByQuery({
-      email: payload.email,
-    });
-
-    if (existUser) {
-      throw new AppError(400, "Email already register with another account");
-    }
-
-    const hashedPassword = await bcrypt.hash(payload.password, 10);
-    const data: UserSchemaType = {
-      fullName: payload.fullName,
-      email: payload.email,
-      role: "user",
-      isVerified: false,
-      password: hashedPassword,
-      avatarUrl,
-    };
-
-    return await UserRepository.createNewUser(data);
-  } catch (error) {
-    if (uploadedFiles.length > 0) {
-      await removeFiles(uploadedFiles);
-    }
-    throw error;
-  }
 };
 
 export const login = async (res: Response, payload: loginDataType) => {
-  const user = await UserRepository.findOneByQuery({
-    email: payload.email,
-  });
+    const user = await UserRepository.findOneByQuery({
+        email: payload.email,
+    });
 
-  if (!user) {
-    throw new AppError(401, "Unauthorized");
-  }
+    if (!user) {
+        throw new AppError(401, "Unauthorized");
+    }
 
-  const isPasswordMatch = await bcrypt.compare(payload.password, user.password);
+    const isPasswordMatch = await bcrypt.compare(payload.password, user.password);
 
-  if (!isPasswordMatch) {
-    throw new AppError(401, "Unauthorized");
-  }
+    if (!isPasswordMatch) {
+        throw new AppError(401, "Unauthorized");
+    }
 
-  // Generate the token and return it along with user data
-  const token = generateToken({
-    userId: user._id.toString(),
-    email: user.email,
-    role: user.role,
-  });
+    // Generate the token and return it along with user data
+    const token = generateToken({
+        userId: user._id.toString(),
+        email: user.email,
+        role: user.role,
+    });
 
-  // Set the token in the response header
-  saveCookie(res, "token", token);
+    // Set the token in the response header
+    saveCookie(res, "authToken", token);
 
-  return {
-    token,
-  };
+    return {
+        token,
+    };
 };
 
 export const getProfile = async (userId: string) => {
-  const user = await UserRepository.findUserById(userId);
-  if (!user) {
-    throw new AppError(404, "User not found");
-  }
-  return user;
+    const user = await UserRepository.findUserById(userId);
+    if (!user) {
+        throw new AppError(404, "User not found");
+    }
+    return user;
 };
 
 export const sendMailForVerify = async (
-  res: Response,
-  { name, email }: sendVerifyEmailType,
+    res: Response,
+    {name, email}: sendVerifyEmailType,
 ) => {
-  const html = emailVerification(
-    `${process.env.FRONTEND_DOMAIN}/verify-email`,
-    name,
-  );
+    const html = emailVerification(
+        `${process.env.FRONTEND_DOMAIN}/verify-email`,
+        name,
+    );
 
-  const result = await sendMail(email, "Email Verification", html);
+    const result = await sendMail(email, "Email Verification", html);
 
-  if (result && !result.id) {
-    throw new AppError(500, "Verification mail send failed, try again.");
-  }
+    if (result && !result.id) {
+        throw new AppError(500, "Verification mail send failed, try again.");
+    }
 
-  const token = generateToken(
-    {
-      name,
-      email,
-      emailId: result?.id,
-    },
-    "1h",
-  );
+    const token = generateToken(
+        {
+            name,
+            email,
+            emailId: result?.id,
+        },
+        "1h",
+    );
 
-  saveCookie(res, "verification_token", token, {
-    maxAge: Number(process.env.EMAIL_VERIFY_EXPIRE_IN),
-  });
+    saveCookie(res, "verificationToken", token, {
+        maxAge: Number(process.env.EMAIL_VERIFY_EXPIRE_IN),
+    });
 
-  return {
-    emailId: result?.id ?? "",
-  };
+    return {
+        emailId: result?.id ?? "",
+    };
+};
+
+export const verifyEmail = async (cookies: Request["cookies"]) => {
+    if (!cookies || !cookies.verificationToken) {
+      throw new AppError(401, "Something went wrong!! No Cookies");
+    }
+
+    const decodedToken = verifyToken(
+        cookies.verificationToken,
+    ) as EmailVerificationTokenType;
+
+    const user = await UserRepository.findOneByQuery({
+        email: decodedToken.email,
+    });
+
+    if (!user) {
+        throw new AppError(404, "User not found");
+    }
+
+    // Update the user verification filed
+    await UserRepository.updateOne(
+        {email: decodedToken.email},
+        {isVerified: true, verifiedAt: new Date(Date.now())},
+    );
+    return {
+        success: true,
+    };
 };

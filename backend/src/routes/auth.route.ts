@@ -32,4 +32,6 @@ authRouter.post(
   asyncHandler(AuthController.sendVerifyEmail),
 );
 
+authRouter.post("/verify-email", asyncHandler(AuthController.verifyEmail));
+
 export default authRouter;

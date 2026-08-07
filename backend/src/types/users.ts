@@ -13,3 +13,9 @@ export interface UserSchemaType {
 export interface UserModelSchema extends UserSchemaType {
   _id: string;
 }
+
+export type UserModelUpdateType = Partial<UserSchemaType>;
+export type UserModelUpdateQuery = Partial<{
+  _id: string;
+  email: string;
+}>;

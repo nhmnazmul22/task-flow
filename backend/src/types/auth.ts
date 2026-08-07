@@ -3,3 +3,9 @@ export type TokenPayloadType = {
   email: string;
   role: string;
 };
+
+export type EmailVerificationTokenType = {
+  name?: string;
+  email: string;
+  emailId: string;
+};

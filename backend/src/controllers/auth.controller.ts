@@ -56,3 +56,13 @@ export const sendVerifyEmail = async (req: Request, res: Response) => {
     data: result,
   });
 };
+
+export const verifyEmail = async (req: Request, res: Response) => {
+  const result = await AuthServices.verifyEmail(req.cookies);
+
+  return res.json({
+    success: true,
+    message: "Email verification successful",
+    data: result,
+  });
+};

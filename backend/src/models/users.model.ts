@@ -1,7 +1,7 @@
-import type { UserSchemaType } from "@/types/users.js";
+import type { UserModelSchema } from "@/types/users.js";
 import mongoose, { Model, Schema } from "mongoose";
 
-const UserSchema = new Schema<UserSchemaType>(
+const UserSchema = new Schema<UserModelSchema>(
   {
     fullName: {
       type: String,
@@ -39,7 +39,7 @@ const UserSchema = new Schema<UserSchemaType>(
     verifiedAt: {
       type: Date,
       default: null,
-    }
+    },
   },
   {
     timestamps: true,
@@ -48,6 +48,6 @@ const UserSchema = new Schema<UserSchemaType>(
 );
 
 const UserModel =
-  mongoose.models.User ?? mongoose.model<UserSchemaType>("User", UserSchema);
+  mongoose.models.User ?? mongoose.model<UserModelSchema>("User", UserSchema);
 
 export default UserModel;
