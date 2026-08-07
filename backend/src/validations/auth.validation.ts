@@ -32,3 +32,20 @@ export const sendVerifyEmailSchema = z.object({
 });
 
 export type sendVerifyEmailType = z.infer<typeof sendVerifyEmailSchema>;
+
+export const passwordChangePayloadSchema = z
+  .object({
+    oldPassword: z.string().min(8, "Password must be at least 8 characters"),
+    newPassword: z.string().min(8, "Password must be at least 8 characters"),
+    confirmNewPassword: z
+      .string()
+      .min(8, "Password must be at least 8 characters"),
+  })
+  .refine((data) => data.newPassword === data.confirmNewPassword, {
+    message: "New password and confirm password must match",
+    path: ["confirmNewPassword"],
+  });
+
+export type passwordChangePayloadType = z.infer<
+  typeof passwordChangePayloadSchema
+>;

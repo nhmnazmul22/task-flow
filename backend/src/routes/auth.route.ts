@@ -4,6 +4,7 @@ import { asyncHandler } from "@/utils/index.js";
 import { validationMiddleware } from "@/middlewares/validation.middleware.js";
 import {
   loginValidationSchema,
+  passwordChangePayloadSchema,
   registerValidationSchema,
   sendVerifyEmailSchema,
 } from "@/validations/auth.validation.js";
@@ -33,5 +34,11 @@ authRouter.post(
 );
 
 authRouter.post("/verify-email", asyncHandler(AuthController.verifyEmail));
+authRouter.post(
+  "/change-password",
+  validationMiddleware(passwordChangePayloadSchema),
+  asyncHandler(AuthController.changePassword)
+);
+authRouter.post("/reset-password");
 
 export default authRouter;

@@ -58,11 +58,24 @@ export const sendVerifyEmail = async (req: Request, res: Response) => {
 };
 
 export const verifyEmail = async (req: Request, res: Response) => {
-  const result = await AuthServices.verifyEmail(req.cookies);
+  const result = await AuthServices.verifyEmail(req.cookies?.verificationToken);
 
   return res.json({
     success: true,
     message: "Email verification successful",
+    data: result,
+  });
+};
+
+export const changePassword = async (req: Request, res: Response) => {
+  const result = await AuthServices.changePassword(
+    req?.authInfo?.userId ?? "",
+    req.body,
+  );
+
+  return res.json({
+    success: true,
+    message: "Password change successful",
     data: result,
   });
 };
