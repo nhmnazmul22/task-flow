@@ -60,6 +60,7 @@ export const sendVerifyEmail = async (req: Request, res: Response) => {
 export const verifyEmail = async (req: Request, res: Response) => {
   const result = await AuthServices.verifyEmail(req.cookies?.verificationToken);
 
+  res.clearCookie("verificationToken");
   return res.json({
     success: true,
     message: "Email verification successful",
@@ -76,6 +77,19 @@ export const changePassword = async (req: Request, res: Response) => {
   return res.json({
     success: true,
     message: "Password change successful",
+    data: result,
+  });
+};
+
+export const sendResetPasswordMail = async (req: Request, res: Response) => {
+  const result = await AuthServices.sendResetPasswordMail(
+    res,
+    req.authInfo?.email ?? req.body.email,
+  );
+
+  return res.json({
+    success: true,
+    message: "Password reset mail send successful",
     data: result,
   });
 };

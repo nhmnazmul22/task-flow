@@ -15,6 +15,7 @@ import { saveCookie } from "@/utils/cookies.js";
 import { sendMail } from "@/lib/mail.js";
 import emailVerification from "@/templates/emails/verification.js";
 import type { EmailVerificationTokenType } from "@/types/auth.js";
+import passwordReset from "@/templates/emails/resetPassword.js";
 
 export const register = async (payload: registerDataType) => {
   let uploadedFiles: string[] = [];
@@ -168,4 +169,34 @@ export const changePassword = async (
   user.password = await bcrypt.hash(payload.newPassword, 10);
   await user.save();
   return null;
+};
+
+export const sendResetPasswordMail = async (res: Response, email?: string) => {
+  if (!email) {
+    throw new AppError(422, "Email is required to reset password");
+  }
+
+  const html = passwordReset(`${process.env.FRONTEND_DOMAIN}/reset-password`);
+
+  const result = await sendMail(email, "Password Reset", html);
+
+  if (result && !result.id) {
+    throw new AppError(500, "Password reset mail send failed, try again.");
+  }
+
+  const token = generateToken(
+    {
+      email,
+      emailId: result?.id,
+    },
+    "15min",
+  );
+
+  saveCookie(res, "resetToken", token, {
+    maxAge: 15 * 60 * 1000,
+  });
+
+  return {
+    emailId: result?.id ?? "",
+  };
 };

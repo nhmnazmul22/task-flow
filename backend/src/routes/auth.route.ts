@@ -36,9 +36,10 @@ authRouter.post(
 authRouter.post("/verify-email", asyncHandler(AuthController.verifyEmail));
 authRouter.post(
   "/change-password",
+  authMiddleware,
   validationMiddleware(passwordChangePayloadSchema),
-  asyncHandler(AuthController.changePassword)
+  asyncHandler(AuthController.changePassword),
 );
-authRouter.post("/reset-password");
+authRouter.post("/password-reset-mail", authMiddleware, asyncHandler(AuthController.sendResetPasswordMail));
 
 export default authRouter;
