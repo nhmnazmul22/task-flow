@@ -47,7 +47,6 @@ export const profile = async (req: Request, res: Response) => {
 
 export const sendVerifyEmail = async (req: Request, res: Response) => {
   const result = await AuthServices.sendMailForVerify(
-    res,
     req.body as sendVerifyEmailType,
   );
 
@@ -59,9 +58,8 @@ export const sendVerifyEmail = async (req: Request, res: Response) => {
 };
 
 export const verifyEmail = async (req: Request, res: Response) => {
-  const result = await AuthServices.verifyEmail(req.cookies?.verificationToken);
+  const result = await AuthServices.verifyEmail(req.tokenInfo as IToken);
 
-  res.clearCookie("verificationToken");
   return res.json({
     success: true,
     message: "Email verification successful",
@@ -84,23 +82,25 @@ export const changePassword = async (req: Request, res: Response) => {
 
 export const sendResetPasswordMail = async (req: Request, res: Response) => {
   const result = await AuthServices.sendResetPasswordMail(
-    res,
     req.authInfo?.email ?? req.body.email,
   );
 
   return res.json({
     success: true,
-    message: "Password reset mail send successful",
+    message: "Password reset mail send successfully",
     data: result,
   });
 };
 
 export const resetPassword = async (req: Request, res: Response) => {
-  const result = await AuthServices.resetPassword(req.tokenInfo as IToken, req.body);
+  const result = await AuthServices.resetPassword(
+    req.tokenInfo as IToken,
+    req.body,
+  );
 
   return res.json({
     success: true,
-    message: "Password reset mail send successful",
-    data: null,
+    message: "Password reset successfully",
+    data: result,
   });
 };

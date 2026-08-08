@@ -10,8 +10,8 @@ import type { UserSchemaType } from "@/types/users.js";
 import * as UserRepository from "@/repositories/user.repo.js";
 import { AppError } from "@/errors/appError.js";
 import { removeFiles } from "@/utils/upload.js";
-import { generateToken, verifyToken } from "@/lib/jwtToken.js";
-import type { Request, Response } from "express";
+import { generateToken } from "@/lib/jwtToken.js";
+import type { Response } from "express";
 import { saveCookie } from "@/utils/cookies.js";
 import { sendMail } from "@/lib/mail.js";
 import emailVerification from "@/templates/emails/verification.js";
@@ -102,12 +102,22 @@ export const getProfile = async (userId: string) => {
   return user;
 };
 
-export const sendMailForVerify = async (
-  res: Response,
-  { name, email }: sendVerifyEmailType,
-) => {
+export const sendMailForVerify = async ({
+  name,
+  email,
+}: sendVerifyEmailType) => {
+  const tokenHash = generateHashToken();
+  const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+
+  await TokenRepo.createNewToken({
+    email,
+    tokenHash,
+    expiresAt,
+    type: TokenEnum.EMAIL_VERIFICATION,
+  });
+
   const html = emailVerification(
-    `${process.env.FRONTEND_DOMAIN}/verify-email`,
+    `${process.env.FRONTEND_DOMAIN}/verify-email?token=${TokenEnum.EMAIL_VERIFICATION}:${tokenHash}`,
     name,
   );
 
@@ -117,46 +127,38 @@ export const sendMailForVerify = async (
     throw new AppError(500, "Verification mail send failed, try again.");
   }
 
-  const token = generateToken(
-    {
-      name,
-      email,
-      emailId: result?.id,
-    },
-    "1h",
-  );
-
-  saveCookie(res, "verificationToken", token, {
-    maxAge: Number(process.env.EMAIL_VERIFY_EXPIRE_IN),
-  });
-
   return {
     emailId: result?.id ?? "",
   };
 };
 
-export const verifyEmail = async (verificationToken?: string) => {
-  if (!verificationToken) {
-    throw new AppError(401, "Something went wrong!! No Cookies");
+export const verifyEmail = async (tokenInfo: IToken) => {
+  if (!tokenInfo.email) {
+    throw new AppError(400, "Invalid reset token");
   }
 
-  const decodedToken = verifyToken(
-    verificationToken,
-  ) as EmailVerificationTokenType;
-
-  const user = await UserRepository.findOneByQuery({
-    email: decodedToken.email,
+  const tokenRecord = await TokenRepo.findOneByQuery({
+    tokenHash: tokenInfo.tokenHash,
+    type: TokenEnum.EMAIL_VERIFICATION,
   });
+
+  if (!tokenRecord) {
+    throw new AppError(400, "Invalid or expired verification token");
+  }
+
+  if (tokenRecord.expiresAt < new Date()) {
+    throw new AppError(400, "Verification token expired");
+  }
+
+  const user = await UserRepository.updateOne(
+    { email: tokenRecord.email as string },
+    { isVerified: true, verifiedAt: new Date(Date.now()) },
+  );
 
   if (!user) {
     throw new AppError(404, "User not found");
   }
 
-  // Update the user verification filed
-  await UserRepository.updateOne(
-    { email: decodedToken.email },
-    { isVerified: true, verifiedAt: new Date(Date.now()) },
-  );
   return {
     success: true,
   };
@@ -178,7 +180,7 @@ export const changePassword = async (
   return null;
 };
 
-export const sendResetPasswordMail = async (res: Response, email?: string) => {
+export const sendResetPasswordMail = async (email?: string) => {
   if (!email) {
     throw new AppError(422, "Email is required to reset password");
   }

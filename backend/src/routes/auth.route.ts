@@ -36,7 +36,11 @@ authRouter.post(
   asyncHandler(AuthController.sendVerifyEmail),
 );
 
-authRouter.post("/verify-email", asyncHandler(AuthController.verifyEmail));
+authRouter.post(
+  "/verify-email",
+  tokenVerifyMiddleware,
+  asyncHandler(AuthController.verifyEmail),
+);
 authRouter.post(
   "/change-password",
   authMiddleware,

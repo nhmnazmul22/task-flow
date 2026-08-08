@@ -8,12 +8,18 @@ const tokenVerifyMiddleware = async (
   res: Response,
   next: NextFunction,
 ) => {
-  if (!req.query?.token) {
+  const token: string = (req.query?.token ?? "") as string;
+  if (!token) {
     throw new AppError(422, "Token is required to reset password");
   }
 
+  const parts = token.split(":");
+  if (parts.length !== 2) {
+    throw new AppError(400, "Invalid token format");
+  }
+
   const tokenData = await findTokenOneByQuery({
-    tokenHash: req.query.token as string,
+    tokenHash: token,
   });
 
   if (!tokenData) {
