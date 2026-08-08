@@ -5,12 +5,14 @@ import { validationMiddleware } from "@/middlewares/validation.middleware.js";
 import {
   loginValidationSchema,
   passwordChangePayloadSchema,
+  passwordResetPayloadSchema,
   registerValidationSchema,
   sendVerifyEmailSchema,
 } from "@/validations/auth.validation.js";
 import { multipartParser } from "@/middlewares/multipartParser.middleware.js";
 import authMiddleware from "@/middlewares/auth.middleware.js";
 import optionalAuthMiddleware from "@/middlewares/optionalAuth.middleware.js";
+import tokenVerifyMiddleware from "@/middlewares/tokenVerify.middleware.js";
 
 const authRouter = Router();
 
@@ -45,6 +47,13 @@ authRouter.post(
   "/password-reset-mail",
   optionalAuthMiddleware,
   asyncHandler(AuthController.sendResetPasswordMail),
+);
+
+authRouter.post(
+  "/reset-password",
+  tokenVerifyMiddleware,
+  validationMiddleware(passwordResetPayloadSchema),
+  asyncHandler(AuthController.resetPassword),
 );
 
 export default authRouter;

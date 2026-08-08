@@ -17,6 +17,7 @@ const TokenSchema = new Schema<IToken>(
     tokenHash: {
       type: String,
       required: true,
+      index: true,
     },
     type: {
       type: String,
@@ -25,7 +26,8 @@ const TokenSchema = new Schema<IToken>(
     },
     expiresAt: {
       type: Date,
-      default: null,
+      required: true,
+      expires: 0,
     },
   },
   {
@@ -33,6 +35,8 @@ const TokenSchema = new Schema<IToken>(
     versionKey: false,
   },
 );
+
+// TokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 const TokenModel =
   mongoose.models.Token ?? mongoose.model<IToken>("Token", TokenSchema);

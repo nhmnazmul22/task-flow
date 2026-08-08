@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import * as AuthServices from "@/services/auth.service.js";
 import type { sendVerifyEmailType } from "@/validations/auth.validation.js";
+import type { IToken } from "@/types/auth.js";
 
 export const register = async (req: Request, res: Response) => {
   const result = await AuthServices.register({
@@ -91,5 +92,15 @@ export const sendResetPasswordMail = async (req: Request, res: Response) => {
     success: true,
     message: "Password reset mail send successful",
     data: result,
+  });
+};
+
+export const resetPassword = async (req: Request, res: Response) => {
+  const result = await AuthServices.resetPassword(req.tokenInfo as IToken, req.body);
+
+  return res.json({
+    success: true,
+    message: "Password reset mail send successful",
+    data: null,
   });
 };

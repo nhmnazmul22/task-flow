@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import type {
   loginDataType,
   passwordChangePayloadType,
+  passwordResetPayloadType,
   registerDataType,
   sendVerifyEmailType,
 } from "@/validations/auth.validation.js";
@@ -14,7 +15,11 @@ import type { Request, Response } from "express";
 import { saveCookie } from "@/utils/cookies.js";
 import { sendMail } from "@/lib/mail.js";
 import emailVerification from "@/templates/emails/verification.js";
-import { TokenEnum, type EmailVerificationTokenType } from "@/types/auth.js";
+import {
+  TokenEnum,
+  type EmailVerificationTokenType,
+  type IToken,
+} from "@/types/auth.js";
 import passwordReset from "@/templates/emails/resetPassword.js";
 import { generateHashToken } from "@/utils/token.js";
 import * as TokenRepo from "@/repositories/token.repo.js";
@@ -201,4 +206,26 @@ export const sendResetPasswordMail = async (res: Response, email?: string) => {
   return {
     emailId: result?.id ?? "",
   };
+};
+
+export const resetPassword = async (
+  tokenInfo: IToken,
+  payload: passwordResetPayloadType,
+) => {
+  if (!tokenInfo.email) {
+    throw new AppError(400, "Invalid reset token");
+  }
+
+  const hashedPassword = await bcrypt.hash(payload.newPassword, 10);
+
+  const user = await UserRepository.updateOne(
+    { email: tokenInfo.email as string },
+    { password: hashedPassword },
+  );
+
+  if (!user) {
+    throw new AppError(404, "User not found");
+  }
+
+  return null;
 };

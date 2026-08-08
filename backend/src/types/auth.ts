@@ -24,3 +24,9 @@ export interface IToken {
   type: TokenEnum;
   expiresAt: Date;
 }
+
+export type TokenFindQueryPayload = Partial<{
+  email: string;
+  tokenHash: string;
+  type: TokenEnum;
+}>;

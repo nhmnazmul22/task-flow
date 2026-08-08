@@ -1,4 +1,5 @@
 import "express";
+import type { IToken, TokenPayloadType } from "../auth.ts";
 
 declare global {
   namespace Express {
@@ -11,15 +12,11 @@ declare global {
       size: number;
       path: string;
     }
-    interface TokenPayloadType {
-      userId: string;
-      email: string;
-      role: string;
-    }
 
     interface Request {
       files?: Record<string, UploadedFile[]>;
       authInfo?: TokenPayloadType;
+      tokenInfo?: IToken;
     }
   }
 }

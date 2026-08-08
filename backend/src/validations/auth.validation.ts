@@ -49,3 +49,19 @@ export const passwordChangePayloadSchema = z
 export type passwordChangePayloadType = z.infer<
   typeof passwordChangePayloadSchema
 >;
+
+export const passwordResetPayloadSchema = z
+  .object({
+    newPassword: z.string().min(8, "Password must be at least 8 characters"),
+    confirmNewPassword: z
+      .string()
+      .min(8, "Password must be at least 8 characters"),
+  })
+  .refine((data) => data.newPassword === data.confirmNewPassword, {
+    message: "New password and confirm password must match",
+    path: ["confirmNewPassword"],
+  });
+
+export type passwordResetPayloadType = z.infer<
+  typeof passwordResetPayloadSchema
+>;
