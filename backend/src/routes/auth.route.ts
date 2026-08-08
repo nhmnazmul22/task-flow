@@ -10,6 +10,7 @@ import {
 } from "@/validations/auth.validation.js";
 import { multipartParser } from "@/middlewares/multipartParser.middleware.js";
 import authMiddleware from "@/middlewares/auth.middleware.js";
+import optionalAuthMiddleware from "@/middlewares/optionalAuth.middleware.js";
 
 const authRouter = Router();
 
@@ -40,6 +41,10 @@ authRouter.post(
   validationMiddleware(passwordChangePayloadSchema),
   asyncHandler(AuthController.changePassword),
 );
-authRouter.post("/password-reset-mail", authMiddleware, asyncHandler(AuthController.sendResetPasswordMail));
+authRouter.post(
+  "/password-reset-mail",
+  optionalAuthMiddleware,
+  asyncHandler(AuthController.sendResetPasswordMail),
+);
 
 export default authRouter;

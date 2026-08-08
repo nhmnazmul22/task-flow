@@ -18,7 +18,8 @@ export enum TokenEnum {
 }
 
 export interface IToken {
-  userId: Schema.Types.ObjectId | string;
+  userId?: Schema.Types.ObjectId | string;
+  email?: string;
   tokenHash: string;
   type: TokenEnum;
   expiresAt: Date;

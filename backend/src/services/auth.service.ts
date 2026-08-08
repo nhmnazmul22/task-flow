@@ -9,13 +9,15 @@ import type { UserSchemaType } from "@/types/users.js";
 import * as UserRepository from "@/repositories/user.repo.js";
 import { AppError } from "@/errors/appError.js";
 import { removeFiles } from "@/utils/upload.js";
-import { generateToken, verifyToken } from "@/lib/token.js";
+import { generateToken, verifyToken } from "@/lib/jwtToken.js";
 import type { Request, Response } from "express";
 import { saveCookie } from "@/utils/cookies.js";
 import { sendMail } from "@/lib/mail.js";
 import emailVerification from "@/templates/emails/verification.js";
-import type { EmailVerificationTokenType } from "@/types/auth.js";
+import { TokenEnum, type EmailVerificationTokenType } from "@/types/auth.js";
 import passwordReset from "@/templates/emails/resetPassword.js";
+import { generateHashToken } from "@/utils/token.js";
+import * as TokenRepo from "@/repositories/token.repo.js";
 
 export const register = async (payload: registerDataType) => {
   let uploadedFiles: string[] = [];
@@ -176,25 +178,25 @@ export const sendResetPasswordMail = async (res: Response, email?: string) => {
     throw new AppError(422, "Email is required to reset password");
   }
 
-  const html = passwordReset(`${process.env.FRONTEND_DOMAIN}/reset-password`);
+  const tokenHash = generateHashToken();
+  const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+
+  await TokenRepo.createNewToken({
+    email,
+    tokenHash,
+    expiresAt,
+    type: TokenEnum.PASSWORD_RESET,
+  });
+
+  const html = passwordReset(
+    `${process.env.FRONTEND_DOMAIN}/reset-password?token=${TokenEnum.PASSWORD_RESET}:${tokenHash}`,
+  );
 
   const result = await sendMail(email, "Password Reset", html);
 
   if (result && !result.id) {
     throw new AppError(500, "Password reset mail send failed, try again.");
   }
-
-  const token = generateToken(
-    {
-      email,
-      emailId: result?.id,
-    },
-    "15min",
-  );
-
-  saveCookie(res, "resetToken", token, {
-    maxAge: 15 * 60 * 1000,
-  });
 
   return {
     emailId: result?.id ?? "",

@@ -3,20 +3,22 @@ import { verifyToken } from "@/lib/jwtToken.ts";
 import type { TokenPayloadType } from "@/types/auth.js";
 import type { NextFunction, Request, Response } from "express";
 
-const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
+const optionalAuthMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const cookies = req.cookies;
   if (!cookies || !cookies.authToken) {
-    throw new AppError(401, "Unauthorized");
+    next();
   }
 
   const decodedToken = verifyToken(cookies.authToken);
-
-  if (!decodedToken) {
-    throw new AppError(401, "Unauthorized");
+  if (decodedToken) {
+    req.authInfo = decodedToken as TokenPayloadType;
   }
 
-  req.authInfo = decodedToken as TokenPayloadType;
   next();
 };
 
-export default authMiddleware;
+export default optionalAuthMiddleware;

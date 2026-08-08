@@ -6,7 +6,13 @@ const TokenSchema = new Schema<IToken>(
     userId: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: false,
+      default: null,
+    },
+    email: {
+      type: String,
+      required: false,
+      default: null,
     },
     tokenHash: {
       type: String,
