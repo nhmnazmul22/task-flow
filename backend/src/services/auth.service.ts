@@ -17,7 +17,6 @@ import { sendMail } from "@/lib/mail.js";
 import emailVerification from "@/templates/emails/verification.js";
 import {
   TokenEnum,
-  type EmailVerificationTokenType,
   type IToken,
 } from "@/types/auth.js";
 import passwordReset from "@/templates/emails/resetPassword.js";
