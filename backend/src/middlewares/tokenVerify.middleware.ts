@@ -19,7 +19,7 @@ const tokenVerifyMiddleware = async (
   }
 
   const tokenData = await findTokenOneByQuery({
-    tokenHash: token,
+    tokenHash: parts[1] as string,
   });
 
   if (!tokenData) {
