@@ -21,13 +21,17 @@ export const createNewUser = async (
 export const findOneByQuery = async (
   query?: Record<string, string>,
 ): Promise<UserDocument | null> => {
-  return await UserModel.findOne(query as any).exec();
+  return await UserModel.findOne(query as any)
+    .populate("Tenant", ["tenantId", "name"])
+    .exec();
 };
 
 export const findUserById = async (
   id: string,
 ): Promise<UserDocument | null> => {
-  return await UserModel.findById(id).exec();
+  return await UserModel.findById(id)
+    .populate("Tenant", ["tenantId", "name"])
+    .exec();
 };
 
 export const updateOne = (
