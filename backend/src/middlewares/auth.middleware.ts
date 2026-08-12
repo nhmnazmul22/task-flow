@@ -1,5 +1,5 @@
 import { AppError } from "@/errors/appError.js";
-import { verifyToken } from "@/lib/jwtToken.ts";
+import { verifyToken } from "@/lib/jwtToken.js";
 import type { TokenPayloadType } from "@/types/auth.js";
 import type { NextFunction, Request, Response } from "express";
 

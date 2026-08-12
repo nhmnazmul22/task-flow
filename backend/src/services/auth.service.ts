@@ -19,7 +19,7 @@ import { TokenEnum, type IToken } from "@/types/auth.js";
 import passwordReset from "@/templates/emails/resetPassword.js";
 import { generateHashToken } from "@/utils/token.js";
 import * as TokenRepo from "@/repositories/token.repo.js";
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { createNewTenant } from "@/services/tenant.service.js";
 
 export const register = async (payload: registerDataType) => {
@@ -73,6 +73,9 @@ export const register = async (payload: registerDataType) => {
       session,
     );
 
+    user.tenantId = tenant._id.toString();
+    user.save();
+
     return {
       user,
       tenant,
@@ -112,6 +115,7 @@ export const login = async (res: Response, payload: loginDataType) => {
     userId: user._id.toString(),
     email: user.email,
     role: user.role,
+    tenantId: user.tenantId,
   });
 
   // Set the token in the response header

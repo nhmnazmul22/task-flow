@@ -13,6 +13,7 @@ import { multipartParser } from "@/middlewares/multipartParser.middleware.js";
 import authMiddleware from "@/middlewares/auth.middleware.js";
 import optionalAuthMiddleware from "@/middlewares/optionalAuth.middleware.js";
 import tokenVerifyMiddleware from "@/middlewares/tokenVerify.middleware.js";
+import { tenantMiddleware } from "@/middlewares/tenant.middleware.js";
 
 const authRouter = Router();
 
@@ -28,7 +29,12 @@ authRouter.post(
   asyncHandler(AuthController.login),
 );
 authRouter.post("/logout", asyncHandler(AuthController.logout));
-authRouter.get("/me", authMiddleware, asyncHandler(AuthController.profile));
+authRouter.get(
+  "/me",
+  authMiddleware,
+  tenantMiddleware,
+  asyncHandler(AuthController.profile),
+);
 
 authRouter.post(
   "/send-verification-email",
@@ -44,6 +50,7 @@ authRouter.post(
 authRouter.post(
   "/change-password",
   authMiddleware,
+  tenantMiddleware,
   validationMiddleware(passwordChangePayloadSchema),
   asyncHandler(AuthController.changePassword),
 );

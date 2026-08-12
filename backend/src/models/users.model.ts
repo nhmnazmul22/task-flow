@@ -28,6 +28,12 @@ const UserSchema = new Schema<UserType>(
       type: String,
       required: true,
     },
+    tenantId: {
+      type: Schema.Types.ObjectId,
+      ref: "Tenant",
+      required: false,
+      default: null,
+    },
     avatarUrl: {
       type: String,
       default: null,

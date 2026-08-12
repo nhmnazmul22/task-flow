@@ -1,10 +1,11 @@
-import type { HydratedDocument } from "mongoose";
+import type { HydratedDocument, Schema } from "mongoose";
 
 export interface UserType {
   fullName: string;
   email: string;
   role: string;
   password: string;
+  tenantId?: string;
   avatarUrl?: string;
   isVerified: boolean;
   verifiedAt?: Date | null;
