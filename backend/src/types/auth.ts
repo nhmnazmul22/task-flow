@@ -12,6 +12,9 @@ export type EmailVerificationTokenType = {
   emailId: string;
 };
 
+/**
+ * Token Related Types
+ */
 export enum TokenEnum {
   EMAIL_VERIFICATION = "email_verification",
   PASSWORD_RESET = "password_reset",

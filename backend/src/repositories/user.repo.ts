@@ -1,28 +1,42 @@
 import UserModel from "@/models/users.model.js";
-import type {UserModelSchema, UserModelUpdateQuery, UserModelUpdateType, UserSchemaType,} from "@/types/users.js";
-import mongoose, {type UpdateQuery,} from "mongoose";
+import type {
+  UserType,
+  UserDocument,
+  UserModelUpdateQuery,
+  UserModelUpdateType,
+} from "@/types/users.js";
+import type { ClientSession } from "mongoose";
 
-export const createNewUser = async (data: UserSchemaType) => {
+export const createNewUser = async (
+  data: UserType,
+  session?: ClientSession,
+): Promise<UserDocument[] | UserDocument> => {
+  if (session) {
+    return await UserModel.create([data], { session });
+  }
+
   return await UserModel.create(data);
 };
 
 export const findOneByQuery = async (
   query?: Record<string, string>,
-): Promise<UserModelSchema | null> => {
+): Promise<UserDocument | null> => {
   return await UserModel.findOne(query as any).exec();
 };
 
-export const findUserById = async (id: string) => {
+export const findUserById = async (
+  id: string,
+): Promise<UserDocument | null> => {
   return await UserModel.findById(id).exec();
 };
 
 export const updateOne = (
-    filter: UserModelUpdateQuery,
-    payload: UserModelUpdateType
+  filter: UserModelUpdateQuery,
+  payload: UserModelUpdateType,
 ) => {
   return UserModel.findOneAndUpdate(
-      (filter as any),
-      { $set: payload },
-      {includeResultMetadata: true, lean: true, projection: { password: 0 }},
+    filter as any,
+    { $set: payload },
+    { includeResultMetadata: true, lean: true, projection: { password: 0 } },
   ).exec();
 };

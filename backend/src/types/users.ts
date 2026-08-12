@@ -1,4 +1,6 @@
-export interface UserSchemaType {
+import type { HydratedDocument } from "mongoose";
+
+export interface UserType {
   fullName: string;
   email: string;
   role: string;
@@ -6,15 +8,16 @@ export interface UserSchemaType {
   avatarUrl?: string;
   isVerified: boolean;
   verifiedAt?: Date | null;
-  createdAt?: Date;
-  updatedAt?: Date;
 }
 
-export interface UserModelSchema extends UserSchemaType {
-  _id: string;
+export interface UserTimestamps {
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export type UserModelUpdateType = Partial<UserSchemaType>;
+export type UserDocument = HydratedDocument<UserType>;
+
+export type UserModelUpdateType = Partial<UserType>;
 export type UserModelUpdateQuery = Partial<{
   _id: string;
   email: string;

@@ -1,7 +1,7 @@
-import type { UserModelSchema } from "@/types/users.js";
+import type { UserType } from "@/types/users.js";
 import mongoose, { Model, Schema } from "mongoose";
 
-const UserSchema = new Schema<UserModelSchema>(
+const UserSchema = new Schema<UserType>(
   {
     fullName: {
       type: String,
@@ -47,7 +47,7 @@ const UserSchema = new Schema<UserModelSchema>(
   },
 );
 
-const UserModel =
-  mongoose.models.User ?? mongoose.model<UserModelSchema>("User", UserSchema);
+const UserModel: Model<UserType> =
+  mongoose.models.User ?? mongoose.model<UserType>("User", UserSchema);
 
 export default UserModel;

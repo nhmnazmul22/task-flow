@@ -6,7 +6,7 @@ import type {
   registerDataType,
   sendVerifyEmailType,
 } from "@/validations/auth.validation.js";
-import type { UserSchemaType } from "@/types/users.js";
+import type { UserDocument, UserType } from "@/types/users.js";
 import * as UserRepository from "@/repositories/user.repo.js";
 import { AppError } from "@/errors/appError.js";
 import { removeFiles } from "@/utils/upload.js";
@@ -15,16 +15,17 @@ import type { Response } from "express";
 import { saveCookie } from "@/utils/cookies.js";
 import { sendMail } from "@/lib/mail.js";
 import emailVerification from "@/templates/emails/verification.js";
-import {
-  TokenEnum,
-  type IToken,
-} from "@/types/auth.js";
+import { TokenEnum, type IToken } from "@/types/auth.js";
 import passwordReset from "@/templates/emails/resetPassword.js";
 import { generateHashToken } from "@/utils/token.js";
 import * as TokenRepo from "@/repositories/token.repo.js";
+import mongoose from "mongoose";
+import { createNewTenant } from "@/services/tenant.service.js";
 
 export const register = async (payload: registerDataType) => {
+  const session = await mongoose.startSession();
   let uploadedFiles: string[] = [];
+
   try {
     let avatarUrl = "";
     if (
@@ -45,7 +46,7 @@ export const register = async (payload: registerDataType) => {
     }
 
     const hashedPassword = await bcrypt.hash(payload.password, 10);
-    const data: UserSchemaType = {
+    const data: UserType = {
       fullName: payload.fullName,
       email: payload.email,
       role: "user",
@@ -54,7 +55,28 @@ export const register = async (payload: registerDataType) => {
       avatarUrl,
     };
 
-    return await UserRepository.createNewUser(data);
+    const [user] = (await UserRepository.createNewUser(
+      data,
+      session,
+    )) as UserDocument[];
+
+    if (!user) {
+      throw new AppError(500, "User creation failed");
+    }
+
+    // Create new Tenant from the user
+    const tenant = await createNewTenant(
+      {
+        userId: user._id.toString(),
+        userName: user.fullName,
+      },
+      session,
+    );
+
+    return {
+      user,
+      tenant,
+    };
   } catch (error) {
     if (uploadedFiles.length > 0) {
       await removeFiles(uploadedFiles);
@@ -70,6 +92,13 @@ export const login = async (res: Response, payload: loginDataType) => {
 
   if (!user) {
     throw new AppError(401, "Unauthorized");
+  }
+
+  if (user && !user.isVerified) {
+    throw new AppError(
+      403,
+      "You account not verified. Please, verify your email address.",
+    );
   }
 
   const isPasswordMatch = await bcrypt.compare(payload.password, user.password);
@@ -168,6 +197,10 @@ export const changePassword = async (
   payload: passwordChangePayloadType,
 ) => {
   const user = await UserRepository.findUserById(userId);
+
+  if (!user) {
+    throw new AppError(404, "User not found");
+  }
 
   const isPasswordCorrect = bcrypt.compare(payload.oldPassword, user.password);
   if (!isPasswordCorrect) {
