@@ -10,11 +10,6 @@ export interface UserType {
   verifiedAt?: Date | null;
 }
 
-export interface UserTimestamps {
-  createdAt: Date;
-  updatedAt: Date;
-}
-
 export type UserDocument = HydratedDocument<UserType>;
 
 export type UserModelUpdateType = Partial<UserType>;
