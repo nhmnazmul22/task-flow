@@ -19,6 +19,12 @@ const TenantSchema = new Schema<ITenant>(
       type: String,
       required: true,
     },
+    users: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   {
     timestamps: true,

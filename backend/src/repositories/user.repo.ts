@@ -10,19 +10,29 @@ import type { ClientSession } from "mongoose";
 export const createNewUser = async (
   data: UserType,
   session?: ClientSession,
-): Promise<UserDocument[] | UserDocument> => {
+): Promise<UserDocument | null> => {
+  let user: UserDocument;
+
   if (session) {
-    return await UserModel.create([data], { session });
+    const [createdUser] = await UserModel.create([data], {
+      session,
+    });
+    user = createdUser as UserDocument;
+  } else {
+    user = await UserModel.create(data);
   }
 
-  return await UserModel.create(data);
+  return UserModel.findById(user._id)
+    .select("-password")
+    .session(session ?? null)
+    .exec();
 };
 
 export const findOneByQuery = async (
   query?: Record<string, string>,
 ): Promise<UserDocument | null> => {
   return await UserModel.findOne(query as any)
-    .populate("Tenant", ["tenantId", "name"])
+    .populate("tenantId", ["tenantId", "name"])
     .exec();
 };
 
@@ -30,7 +40,7 @@ export const findUserById = async (
   id: string,
 ): Promise<UserDocument | null> => {
   return await UserModel.findById(id)
-    .populate("Tenant", ["tenantId", "name"])
+    .populate("tenantId", ["tenantId", "name"])
     .exec();
 };
 

@@ -55,10 +55,7 @@ export const register = async (payload: registerDataType) => {
       avatarUrl,
     };
 
-    const [user] = (await UserRepository.createNewUser(
-      data,
-      session,
-    )) as UserDocument[];
+    const user = await UserRepository.createNewUser(data, session);
 
     if (!user) {
       throw new AppError(500, "User creation failed");

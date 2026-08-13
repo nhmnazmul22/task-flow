@@ -5,10 +5,19 @@ import type { ClientSession } from "mongoose";
 export const createTenant = async (
   payload: ITenant,
   session?: ClientSession,
-): Promise<TenantDocument[] | TenantDocument> => {
+): Promise<TenantDocument | null> => {
+  let tenant: TenantDocument;
+
   if (session) {
-    return await TenantModel.create([payload], { session });
+    const [createdTenant] = await TenantModel.create([payload], { session });
+
+    tenant = createdTenant as TenantDocument;
+  } else {
+    tenant = await TenantModel.create(payload);
   }
 
-  return await TenantModel.create(payload);
+  return TenantModel.findById(tenant._id)
+    .select("ownerId name")
+    .session(session ?? null)
+    .exec();
 };
