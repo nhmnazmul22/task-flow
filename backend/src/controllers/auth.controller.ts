@@ -9,9 +9,9 @@ export const register = async (req: Request, res: Response) => {
     files: req.files,
   });
 
-  return res.json({
+  return res.status(201).json({
     success: true,
-    message: "Register successful",
+    message: "User registered successfully",
     data: result,
   });
 };

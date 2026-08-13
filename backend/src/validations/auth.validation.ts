@@ -14,7 +14,7 @@ export const registerValidationSchema = z.object({
   //     .regex(/[^A-Za-z0-9]/, "Password must contain a special character"),
   files: z.object({
     avatar: z.array(uploadedFileSchema).max(1).optional(),
-  }),
+  }).optional(),
 });
 
 export type registerDataType = z.infer<typeof registerValidationSchema>;

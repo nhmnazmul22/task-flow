@@ -3,6 +3,7 @@ import request from "supertest";
 
 describe("Auth Feature Tests", () => {
   it("should register a new user", async () => {
+    console.log("test started...");
     const payload = {
       fullName: "testuser",
       email: "testuser@example.com",
@@ -11,6 +12,7 @@ describe("Auth Feature Tests", () => {
 
     const response = await request(app)
       .post("/auth/register")
+      .set("content-type", "application/json")
       .send(payload);
 
     expect(response.status).toBe(201);
