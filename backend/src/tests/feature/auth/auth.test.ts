@@ -3,7 +3,6 @@ import request from "supertest";
 
 describe("Auth Feature Tests", () => {
   it("should register a new user", async () => {
-    console.log("test started...");
     const payload = {
       fullName: "testuser",
       email: "testuser@example.com",
