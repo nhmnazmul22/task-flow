@@ -7,7 +7,7 @@ export function tenantMiddleware(
   res: Response,
   next: NextFunction,
 ) {
-  if (!req.authInfo || req.authInfo.tenantId || req.authInfo.userId) {
+  if (!req.authInfo || !req.authInfo.tenantId || !req.authInfo.userId) {
     throw new AppError(401, "Auth info not found");
   }
 

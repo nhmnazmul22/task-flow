@@ -9,7 +9,7 @@ const optionalAuthMiddleware = (
 ) => {
   const cookies = req.cookies;
   if (!cookies || !cookies.authToken) {
-    next();
+    return next();
   }
 
   const decodedToken = verifyToken(cookies.authToken);
