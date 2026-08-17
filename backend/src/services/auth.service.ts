@@ -203,7 +203,7 @@ export const changePassword = async (
     throw new AppError(404, "User not found");
   }
 
-  const isPasswordCorrect = bcrypt.compare(payload.oldPassword, user.password);
+  const isPasswordCorrect = await bcrypt.compare(payload.oldPassword, user.password);
   if (!isPasswordCorrect) {
     throw new AppError(422, "Old Password mismatch");
   }
