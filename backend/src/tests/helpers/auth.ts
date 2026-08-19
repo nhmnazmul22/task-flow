@@ -39,3 +39,8 @@ export function extractCookie(cookies: string[], name: string): string {
   const cookie = cookies.find((c) => c.startsWith(`${name}=`));
   return cookie?.split(";")[0] ?? "";
 }
+
+export async function getAuthCookies() {
+  const { cookies } = await createAuthenticatedUser();
+  return extractCookie(cookies, "authToken");
+}

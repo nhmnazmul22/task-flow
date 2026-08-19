@@ -16,9 +16,7 @@ const WorkspaceSchema = new Schema<WorkspaceType>(
     slug: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
-      index: true,
     },
     ownerId: {
       type: Schema.Types.ObjectId,
@@ -31,6 +29,8 @@ const WorkspaceSchema = new Schema<WorkspaceType>(
     versionKey: false,
   },
 );
+
+WorkspaceSchema.index({ tenantId: 1, slug: 1 }, { unique: true });
 
 const WorkspaceModel: Model<WorkspaceType> =
   mongoose.models.Workspace ??

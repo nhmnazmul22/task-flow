@@ -9,10 +9,11 @@ export const createWorkspace = async (
   let workspace: WorkspaceDocument | null = null;
 
   if (session) {
-    let [newWorkspace] = await WorkspaceModel.create([data], { session });
+    const [newWorkspace] = await WorkspaceModel.create([data], { session });
     workspace = newWorkspace as WorkspaceDocument;
+  } else {
+    workspace = await WorkspaceModel.create(data);
   }
-  workspace = await WorkspaceModel.create(data);
 
   return workspace;
 };
