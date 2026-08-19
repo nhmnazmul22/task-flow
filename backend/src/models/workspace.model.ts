@@ -1,7 +1,7 @@
 import type { WorkspaceType } from "@/types/workspace.js";
 import mongoose, { Model, Schema } from "mongoose";
 
-const WorkSchema = new Schema<WorkspaceType>(
+const WorkspaceSchema = new Schema<WorkspaceType>(
   {
     tenantId: {
       type: Schema.Types.ObjectId,
@@ -34,6 +34,6 @@ const WorkSchema = new Schema<WorkspaceType>(
 
 const WorkspaceModel: Model<WorkspaceType> =
   mongoose.models.Workspace ??
-  mongoose.model<WorkspaceType>("Workspace", WorkSchema);
+  mongoose.model<WorkspaceType>("Workspace", WorkspaceSchema);
 
 export default WorkspaceModel;

@@ -2,11 +2,8 @@ import { generateSlug } from "@/utils/common.js";
 import type { Request } from "express";
 import mongoose from "mongoose";
 import * as WorkspaceRepo from "@/repositories/workspace.repo.js";
-import { createWorkspaceMember } from "@/repositories/workspace-member.repo.js";
-import { WorkspaceMemberRoleEnum } from "@/types/workspace.js";
-import { AppError } from "@/errors/appError.js";
 
-export const createWorkspace = async (req: Request) => {
+export const createWorkspaceMember = async (req: Request) => {
   const session = await mongoose.startSession();
 
   const payload = req.body;
@@ -20,20 +17,5 @@ export const createWorkspace = async (req: Request) => {
   // Create the workspace
   const workspace = await WorkspaceRepo.createWorkspace(data, session);
 
-  if (!workspace) {
-    throw new AppError(500, "Workspace create failed");
-  }
-
   // add the member into the workspace
-  await createWorkspaceMember(
-    {
-      tenantId: workspace.tenantId,
-      userId: workspace.ownerId,
-      workspaceId: workspace._id.toString(),
-      role: WorkspaceMemberRoleEnum.OWNER,
-    },
-    session,
-  );
-
-  return workspace;
 };

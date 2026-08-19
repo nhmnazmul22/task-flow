@@ -3,7 +3,7 @@ import * as WorkspaceService from "@/services/workspace.service.js";
 
 export const getAllWorkspaces = async (req: Request, res: Response) => {};
 export const createWorkspace = async (req: Request, res: Response) => {
-  const result = await WorkspaceService.createWorkspace(req.body);
+  const result = await WorkspaceService.createWorkspace(req);
 
   return res.status(201).json({
     success: true,
