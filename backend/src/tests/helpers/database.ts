@@ -10,7 +10,19 @@ export const connectDB = async () => {
 };
 
 export const disconnectDB = async () => {
-  await mongoose.disconnect();
+  try {
+    if (mongoose.connection.readyState === 1) {
+      await mongoose.connection.dropDatabase();
+    }
+  } catch (err) {
+  }
+
+  try {
+    await mongoose.connection.close(true);
+  } catch (err) {
+    await mongoose.disconnect();
+  }
+
   await mongoServer.stop();
   console.log("Database disconnected");
 };
