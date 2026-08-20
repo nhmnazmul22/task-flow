@@ -1,12 +1,12 @@
 import app from "@/app.js";
 import WorkspaceModel from "@/models/workspace.model.js";
-import { getAuthCookies } from "@/tests/helpers/auth.js";
+import { getAuth } from "@/tests/helpers/auth.js";
 import request from "supertest";
 
-describe("Workspace Testing", () => {
+describe("Workspace Create Testing", () => {
   it("Admin can create a workspace", async () => {
     // Arrange
-    const cookie = await getAuthCookies();
+    const {authCookies} = await getAuth();
 
     const payload = {
       name: "testing workspace",
@@ -15,7 +15,7 @@ describe("Workspace Testing", () => {
     // Act
     const response = await request(app)
       .post("/workspaces/create")
-      .set("Cookie", [cookie])
+      .set("Cookie", [authCookies])
       .set("content-type", "application/json")
       .send(payload);
 
@@ -28,7 +28,7 @@ describe("Workspace Testing", () => {
   });
   it('Workspace create initial Workspace Member first time', async () => {
     // Arrange
-    const cookie = await getAuthCookies();
+    const {authCookies} = await getAuth();
     const payload = {
       name: "testing workspace",
     };
@@ -36,7 +36,7 @@ describe("Workspace Testing", () => {
     // Act
     const response = await request(app)
         .post("/workspaces/create")
-        .set("Cookie", [cookie])
+        .set("Cookie", [authCookies])
         .set("content-type", "application/json")
         .send(payload);
 

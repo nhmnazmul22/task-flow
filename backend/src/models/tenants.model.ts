@@ -3,12 +3,6 @@ import type { ITenant } from "@/types/tenant.js";
 
 const TenantSchema = new Schema<ITenant>(
   {
-    tenantId: {
-      type: String,
-      required: true,
-      index: true,
-      unique: true,
-    },
     ownerId: {
       type: Schema.Types.ObjectId,
       ref: "User",
