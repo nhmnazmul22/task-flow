@@ -11,7 +11,9 @@ export const createWorkspace = async (req: Request, res: Response) => {
     data: result,
   });
 };
-export const updateWorkspace = async (req: Request, res: Response) => {};
+export const updateWorkspace = async (req: Request, res: Response) => {
+
+};
 export const deleteWorkspace = async (req: Request, res: Response) => {};
 
 export const addWorkspaceMember = async (req: Request, res: Response) => {};
