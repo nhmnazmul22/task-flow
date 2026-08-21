@@ -2,6 +2,7 @@ import type {CreateTenantType, TenantDocument} from "@/types/tenant.js";
 import * as TenantRepo from "@/repositories/tenant.repo.js";
 import type {ClientSession} from "mongoose";
 import {AppError} from "@/errors/appError.js";
+import ResponseStatus from "@/config/status.js";
 
 export const createNewTenant = async (
     {userId, userName}: CreateTenantType,
@@ -18,7 +19,7 @@ export const createNewTenant = async (
     );
 
     if (!tenant) {
-        throw new AppError(500, "Tenant creation failed");
+        throw new AppError(ResponseStatus.INTERNAL_SERVER_ERROR, "Tenant creation failed");
     }
 
     return tenant;

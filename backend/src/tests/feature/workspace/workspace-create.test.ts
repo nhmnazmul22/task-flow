@@ -1,3 +1,4 @@
+import ResponseStatus from "@/config/status.js";
 import app from "@/app.js";
 import WorkspaceModel from "@/models/workspace.model.js";
 import { getAuth } from "@/tests/helpers/auth.js";
@@ -20,7 +21,7 @@ describe("Workspace Create Testing", () => {
       .send(payload);
 
     // Assert
-    expectResponse(response, 201);
+    expectResponse(response, ResponseStatus.CREATED);
     expect(response.body).toHaveProperty(
       "message",
       "Workspace created successfully",
@@ -41,7 +42,7 @@ describe("Workspace Create Testing", () => {
         .send(payload);
 
     // Assert
-    expectResponse(response, 201);
+    expectResponse(response, ResponseStatus.CREATED);
     expect(response.body).toHaveProperty(
         "message",
         "Workspace created successfully",

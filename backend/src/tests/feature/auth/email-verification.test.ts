@@ -1,3 +1,4 @@
+import ResponseStatus from "@/config/status.js";
 import app from "@/app.js";
 import { createUserData } from "@/tests/factory/auth.factory.js";
 import { generateHashToken } from "@/utils/token.js";
@@ -20,7 +21,7 @@ describe("Email Verification", () => {
         .set("content-type", "application/json")
         .send({ email: userData.email, name: userData.fullName });
 
-      expectResponse(response, 200);
+      expectResponse(response, ResponseStatus.SUCCESS);
       expect(response.body).toHaveProperty(
         "message",
         "Verification mail send successful",
@@ -41,7 +42,7 @@ describe("Email Verification", () => {
         .set("content-type", "application/json")
         .send({ email: userData.email });
 
-      expectResponse(response, 200);
+      expectResponse(response, ResponseStatus.SUCCESS);
       expect(response.body).toHaveProperty(
         "message",
         "Verification mail send successful",
@@ -54,7 +55,7 @@ describe("Email Verification", () => {
         .set("content-type", "application/json")
         .send({});
 
-      expectResponse(response, 400);
+      expectResponse(response, ResponseStatus.BAD_REQUEST);
     });
 
     it("should reject with invalid email format", async () => {
@@ -63,7 +64,7 @@ describe("Email Verification", () => {
         .set("content-type", "application/json")
         .send({ email: "not-an-email" });
 
-      expectResponse(response, 400);
+      expectResponse(response, ResponseStatus.BAD_REQUEST);
     });
   });
 
@@ -88,7 +89,7 @@ describe("Email Verification", () => {
         .post(`/auth/verify-email?token=email_verification:${tokenHash}`)
         .send();
 
-      expectResponse(response, 200);
+      expectResponse(response, ResponseStatus.SUCCESS);
       expect(response.body).toHaveProperty(
         "message",
         "Email verification successful",
@@ -99,7 +100,7 @@ describe("Email Verification", () => {
     it("should reject verify without token query param", async () => {
       const response = await request(app).post("/auth/verify-email").send();
 
-      expectResponse(response, 422);
+      expectResponse(response, ResponseStatus.UNPROCESSABLE_ENTITY);
       expect(response.body).toHaveProperty(
         "message",
         "Token is required to reset password",
@@ -111,7 +112,7 @@ describe("Email Verification", () => {
         .post("/auth/verify-email?token=invalidformat")
         .send();
 
-      expectResponse(response, 400);
+      expectResponse(response, ResponseStatus.BAD_REQUEST);
       expect(response.body).toHaveProperty("message", "Invalid token format");
     });
 
@@ -122,7 +123,7 @@ describe("Email Verification", () => {
         )
         .send();
 
-      expectResponse(response, 400);
+      expectResponse(response, ResponseStatus.BAD_REQUEST);
       expect(response.body).toHaveProperty(
         "message",
         "Invalid or expired token",
@@ -149,7 +150,7 @@ describe("Email Verification", () => {
         .post(`/auth/verify-email?token=email_verification:${tokenHash}`)
         .send();
 
-      expectResponse(response, 400);
+      expectResponse(response, ResponseStatus.BAD_REQUEST);
       expect(response.body).toHaveProperty("message", "Token expired");
     });
   });

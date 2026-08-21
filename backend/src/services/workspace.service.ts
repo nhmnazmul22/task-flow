@@ -23,7 +23,7 @@ export const createWorkspace = async (req: Request) => {
     const workspace = await WorkspaceRepo.createWorkspace(data, session);
 
     if (!workspace) {
-        throw new AppError(500, "Workspace create failed");
+        throw new AppError(ResponseStatus.INTERNAL_SERVER_ERROR, "Workspace create failed");
     }
 
     // add the member into the workspace

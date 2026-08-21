@@ -1,3 +1,4 @@
+import ResponseStatus from "@/config/status.js";
 import app from "@/app.js";
 import {
   createAuthenticatedUser,
@@ -20,7 +21,7 @@ describe("POST /auth/change-password", () => {
         confirmNewPassword: "NewPassword456!",
       });
 
-    expectResponse(response, 200);
+    expectResponse(response, ResponseStatus.SUCCESS);
     expect(response.body).toHaveProperty(
       "message",
       "Password change successful",
@@ -37,7 +38,7 @@ describe("POST /auth/change-password", () => {
         confirmNewPassword: "NewPassword456!",
       });
 
-    expectResponse(response, 401);
+    expectResponse(response, ResponseStatus.UNAUTHORIZED);
   });
 
   it("should reject with wrong old password", async () => {
@@ -54,7 +55,7 @@ describe("POST /auth/change-password", () => {
         confirmNewPassword: "NewPassword456!",
       });
 
-    expectResponse(response, 422);
+    expectResponse(response, ResponseStatus.UNPROCESSABLE_ENTITY);
     expect(response.body).toHaveProperty("message", "Old Password mismatch");
   });
 
@@ -72,7 +73,7 @@ describe("POST /auth/change-password", () => {
         confirmNewPassword: "DifferentPassword789!",
       });
 
-    expectResponse(response, 400);
+    expectResponse(response, ResponseStatus.BAD_REQUEST);
   });
 
   it("should reject with missing old password", async () => {
@@ -88,7 +89,7 @@ describe("POST /auth/change-password", () => {
         confirmNewPassword: "NewPassword456!",
       });
 
-    expectResponse(response, 400);
+    expectResponse(response, ResponseStatus.BAD_REQUEST);
   });
 
   it("should reject with missing new password", async () => {
@@ -104,7 +105,7 @@ describe("POST /auth/change-password", () => {
         confirmNewPassword: "NewPassword456!",
       });
 
-    expectResponse(response, 400);
+    expectResponse(response, ResponseStatus.BAD_REQUEST);
   });
 
   it("should reject with short new password", async () => {
@@ -121,7 +122,7 @@ describe("POST /auth/change-password", () => {
         confirmNewPassword: "123",
       });
 
-    expectResponse(response, 400);
+    expectResponse(response, ResponseStatus.BAD_REQUEST);
   });
 
   it("should allow login with new password after change", async () => {
@@ -143,7 +144,7 @@ describe("POST /auth/change-password", () => {
       .set("content-type", "application/json")
       .send({ email: userData.email, password: "NewPassword456!" });
 
-    expectResponse(loginResponse, 200);
+    expectResponse(loginResponse, ResponseStatus.SUCCESS);
   });
 
   it("should reject old password after successful change", async () => {
@@ -165,6 +166,6 @@ describe("POST /auth/change-password", () => {
       .set("content-type", "application/json")
       .send({ email: userData.email, password: userData.password });
 
-    expectResponse(loginResponse, 401);
+    expectResponse(loginResponse, ResponseStatus.UNAUTHORIZED);
   });
 });

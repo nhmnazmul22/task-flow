@@ -1,3 +1,4 @@
+import ResponseStatus from "@/config/status.js";
 import app from "@/app.js";
 import {createUserData} from "@/tests/factory/auth.factory.js";
 import {createAuthenticatedUser,} from "@/tests/helpers/auth.js";
@@ -12,7 +13,7 @@ describe("POST /auth/login", () => {
             .set("content-type", "application/json")
             .send({email: userData.email, password: userData.password});
 
-        expectResponse(response, 200);
+        expectResponse(response, ResponseStatus.SUCCESS);
         expect(response.body).toHaveProperty("message", "Login successful");
         expect(response.body.data).toHaveProperty("token");
     });
@@ -25,7 +26,7 @@ describe("POST /auth/login", () => {
             .set("content-type", "application/json")
             .send({email: userData.email, password: userData.password});
 
-        expectResponse(response, 200);
+        expectResponse(response, ResponseStatus.SUCCESS);
         const setCookie = response.headers["set-cookie"] as unknown as string[];
         expect(setCookie).toBeDefined();
         const authCookie = setCookie.find((c) => c.startsWith("authToken="));
@@ -38,7 +39,7 @@ describe("POST /auth/login", () => {
             .set("content-type", "application/json")
             .send({email: "nonexistent@example.com", password: "Password123!"});
 
-        expectResponse(response, 401);
+        expectResponse(response, ResponseStatus.UNAUTHORIZED);
         expect(response.body).toHaveProperty("message", "Unauthorized");
     });
 
@@ -50,7 +51,7 @@ describe("POST /auth/login", () => {
             .set("content-type", "application/json")
             .send({email: userData.email, password: "WrongPassword123!"});
 
-        expectResponse(response, 401);
+        expectResponse(response, ResponseStatus.UNAUTHORIZED);
         expect(response.body).toHaveProperty("message", "Unauthorized");
     });
 
@@ -67,7 +68,7 @@ describe("POST /auth/login", () => {
             .set("content-type", "application/json")
             .send({email: userData.email, password: userData.password});
 
-        expectResponse(response, 403);
+        expectResponse(response, ResponseStatus.FORBIDDEN);
         expect(response.body).toHaveProperty(
             "message",
             "You account not verified. Please, verify your email address.",
@@ -80,7 +81,7 @@ describe("POST /auth/login", () => {
             .set("content-type", "application/json")
             .send({password: "Password123!"});
 
-        expectResponse(response, 400);
+        expectResponse(response, ResponseStatus.BAD_REQUEST);
     });
 
     it("should reject login with missing password", async () => {
@@ -89,7 +90,7 @@ describe("POST /auth/login", () => {
             .set("content-type", "application/json")
             .send({email: "test@example.com"});
 
-        expectResponse(response, 400);
+        expectResponse(response, ResponseStatus.BAD_REQUEST);
     });
 
     it("should reject login with invalid email format", async () => {
@@ -98,7 +99,7 @@ describe("POST /auth/login", () => {
             .set("content-type", "application/json")
             .send({email: "not-an-email", password: "Password123!"});
 
-        expectResponse(response, 400);
+        expectResponse(response, ResponseStatus.BAD_REQUEST);
     });
 
     it("should reject login with short password", async () => {
@@ -107,7 +108,7 @@ describe("POST /auth/login", () => {
             .set("content-type", "application/json")
             .send({email: "test@example.com", password: "123"});
 
-        expectResponse(response, 400);
+        expectResponse(response, ResponseStatus.BAD_REQUEST);
     });
 
     it("should reject login with empty body", async () => {
@@ -116,6 +117,6 @@ describe("POST /auth/login", () => {
             .set("content-type", "application/json")
             .send({});
 
-        expectResponse(response, 400);
+        expectResponse(response, ResponseStatus.BAD_REQUEST);
     });
 });

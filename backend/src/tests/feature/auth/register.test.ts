@@ -1,3 +1,4 @@
+import ResponseStatus from "@/config/status.js";
 import app from "@/app.js";
 import { createUserData } from "@/tests/factory/auth.factory.js";
 import request from "supertest";
@@ -11,7 +12,7 @@ describe("POST /auth/register", () => {
       .set("content-type", "application/json")
       .send(payload);
 
-    expectResponse(response, 201);
+    expectResponse(response, ResponseStatus.CREATED);
     expect(response.body).toHaveProperty(
       "message",
       "User registered successfully",
@@ -28,7 +29,7 @@ describe("POST /auth/register", () => {
       .set("content-type", "application/json")
       .send(payload);
 
-    expectResponse(response, 201);
+    expectResponse(response, ResponseStatus.CREATED);
     expect(response.body).toEqual({
       success: true,
       message: "User registered successfully",
@@ -67,7 +68,7 @@ describe("POST /auth/register", () => {
       .set("content-type", "application/json")
       .send(payload);
 
-    expectResponse(response, 400);
+    expectResponse(response, ResponseStatus.BAD_REQUEST);
     expect(response.body).toHaveProperty(
       "message",
       "Email already register with another account",
@@ -83,7 +84,7 @@ describe("POST /auth/register", () => {
       .set("content-type", "application/json")
       .send(payload);
 
-    expectResponse(response, 400);
+    expectResponse(response, ResponseStatus.BAD_REQUEST);
   });
 
   it("should reject registration with missing email", async () => {
@@ -95,7 +96,7 @@ describe("POST /auth/register", () => {
       .set("content-type", "application/json")
       .send(payload);
 
-    expectResponse(response, 400);
+    expectResponse(response, ResponseStatus.BAD_REQUEST);
   });
 
   it("should reject registration with missing password", async () => {
@@ -107,7 +108,7 @@ describe("POST /auth/register", () => {
       .set("content-type", "application/json")
       .send(payload);
 
-    expectResponse(response, 400);
+    expectResponse(response, ResponseStatus.BAD_REQUEST);
   });
 
   it("should reject registration with invalid email format", async () => {
@@ -118,7 +119,7 @@ describe("POST /auth/register", () => {
       .set("content-type", "application/json")
       .send(payload);
 
-    expectResponse(response, 400);
+    expectResponse(response, ResponseStatus.BAD_REQUEST);
   });
 
   it("should reject registration with short password", async () => {
@@ -129,7 +130,7 @@ describe("POST /auth/register", () => {
       .set("content-type", "application/json")
       .send(payload);
 
-    expectResponse(response, 400);
+    expectResponse(response, ResponseStatus.BAD_REQUEST);
   });
 
   it("should reject registration with empty body", async () => {
@@ -138,7 +139,7 @@ describe("POST /auth/register", () => {
       .set("content-type", "application/json")
       .send({});
 
-    expectResponse(response, 400);
+    expectResponse(response, ResponseStatus.BAD_REQUEST);
   });
 
   it("should set isVerified to false by default", async () => {
@@ -149,7 +150,7 @@ describe("POST /auth/register", () => {
       .set("content-type", "application/json")
       .send(payload);
 
-    expectResponse(response, 201);
+    expectResponse(response, ResponseStatus.CREATED);
     expect(response.body.data.user.isVerified).toBe(false);
     expect(response.body.data.user.verifiedAt).toBeNull();
   });
@@ -162,7 +163,7 @@ describe("POST /auth/register", () => {
       .set("content-type", "application/json")
       .send(payload);
 
-    expectResponse(response, 201);
+    expectResponse(response, ResponseStatus.CREATED);
     expect(response.body.data.user.role).toBe("user");
   });
 });

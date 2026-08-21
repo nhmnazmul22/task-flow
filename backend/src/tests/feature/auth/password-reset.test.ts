@@ -1,3 +1,4 @@
+import ResponseStatus from "@/config/status.js";
 import app from "@/app.js";
 import { createUserData } from "@/tests/factory/auth.factory.js";
 import {
@@ -24,7 +25,7 @@ describe("Password Reset", () => {
         .set("content-type", "application/json")
         .send({ email: userData.email });
 
-      expectResponse(response, 200);
+      expectResponse(response, ResponseStatus.SUCCESS);
       expect(response.body).toHaveProperty(
         "message",
         "Password reset mail send successfully",
@@ -41,7 +42,7 @@ describe("Password Reset", () => {
         .set("content-type", "application/json")
         .send({});
 
-      expectResponse(response, 200);
+      expectResponse(response, ResponseStatus.SUCCESS);
       expect(response.body).toHaveProperty(
         "message",
         "Password reset mail send successfully",
@@ -54,7 +55,7 @@ describe("Password Reset", () => {
         .set("content-type", "application/json")
         .send({});
 
-      expectResponse(response, 422);
+      expectResponse(response, ResponseStatus.UNPROCESSABLE_ENTITY);
       expect(response.body).toHaveProperty(
         "message",
         "Email is required to reset password",
@@ -87,7 +88,7 @@ describe("Password Reset", () => {
           confirmNewPassword: "ResetPassword123!",
         });
 
-      expectResponse(response, 200);
+      expectResponse(response, ResponseStatus.SUCCESS);
       expect(response.body).toHaveProperty(
         "message",
         "Password reset successfully",
@@ -137,7 +138,7 @@ describe("Password Reset", () => {
         .set("content-type", "application/json")
         .send({ email: userData.email, password: "ResetPassword123!" });
 
-      expectResponse(loginResponse, 200);
+      expectResponse(loginResponse, ResponseStatus.SUCCESS);
     });
 
     it("should reject reset without token query param", async () => {
@@ -149,7 +150,7 @@ describe("Password Reset", () => {
           confirmNewPassword: "ResetPassword123!",
         });
 
-      expectResponse(response, 422);
+      expectResponse(response, ResponseStatus.UNPROCESSABLE_ENTITY);
       expect(response.body).toHaveProperty(
         "message",
         "Token is required to reset password",
@@ -165,7 +166,7 @@ describe("Password Reset", () => {
           confirmNewPassword: "ResetPassword123!",
         });
 
-      expectResponse(response, 400);
+      expectResponse(response, ResponseStatus.BAD_REQUEST);
       expect(response.body).toHaveProperty("message", "Invalid token format");
     });
 
@@ -180,7 +181,7 @@ describe("Password Reset", () => {
           confirmNewPassword: "ResetPassword123!",
         });
 
-      expectResponse(response, 400);
+      expectResponse(response, ResponseStatus.BAD_REQUEST);
       expect(response.body).toHaveProperty(
         "message",
         "Invalid or expired token",
@@ -211,7 +212,7 @@ describe("Password Reset", () => {
           confirmNewPassword: "ResetPassword123!",
         });
 
-      expectResponse(response, 400);
+      expectResponse(response, ResponseStatus.BAD_REQUEST);
       expect(response.body).toHaveProperty("message", "Token expired");
     });
 
@@ -239,7 +240,7 @@ describe("Password Reset", () => {
           confirmNewPassword: "DifferentPassword456!",
         });
 
-      expectResponse(response, 400);
+      expectResponse(response, ResponseStatus.BAD_REQUEST);
     });
 
     it("should reject reset with short password", async () => {
@@ -266,7 +267,7 @@ describe("Password Reset", () => {
           confirmNewPassword: "123",
         });
 
-      expectResponse(response, 400);
+      expectResponse(response, ResponseStatus.BAD_REQUEST);
     });
   });
 });

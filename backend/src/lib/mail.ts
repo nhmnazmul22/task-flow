@@ -1,6 +1,7 @@
 import { Resend } from "resend";
 import mailConfig from "@/config/mail.js";
 import { AppError } from "@/errors/appError.js";
+import ResponseStatus from "@/config/status.js";
 
 const resend = new Resend(mailConfig.Resend.API_KEY);
 
@@ -17,7 +18,7 @@ export const sendMail = async (
   });
 
   if (error) {
-    throw new AppError(500, error.message ?? "Verification mail send failed");
+    throw new AppError(ResponseStatus.INTERNAL_SERVER_ERROR, error.message ?? "Verification mail send failed");
   }
 
   return data;

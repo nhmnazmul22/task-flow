@@ -1,4 +1,5 @@
 import { AppError } from "@/errors/appError.js";
+import ResponseStatus from "@/config/status.js";
 import { tenantContext } from "@/lib/asyncStore.js";
 import type { Request, Response, NextFunction } from "express";
 
@@ -8,7 +9,7 @@ export function tenantMiddleware(
   next: NextFunction,
 ) {
   if (!req.authInfo || !req.authInfo.tenantId || !req.authInfo.userId) {
-    throw new AppError(401, "Auth info not found");
+    throw new AppError(ResponseStatus.UNAUTHORIZED, "Auth info not found");
   }
 
   tenantContext.run(

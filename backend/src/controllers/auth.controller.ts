@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import * as AuthServices from "@/services/auth.service.js";
 import type { sendVerifyEmailType } from "@/validations/auth.validation.js";
 import type { IToken } from "@/types/auth.js";
+import ResponseStatus from "@/config/status.js";
 
 export const register = async (req: Request, res: Response) => {
   const result = await AuthServices.register({
@@ -9,7 +10,7 @@ export const register = async (req: Request, res: Response) => {
     files: req.files,
   });
 
-  return res.status(201).json({
+  return res.status(ResponseStatus.CREATED).json({
     success: true,
     message: "User registered successfully",
     data: result,
@@ -19,7 +20,7 @@ export const register = async (req: Request, res: Response) => {
 export const login = async (req: Request, res: Response) => {
   const result = await AuthServices.login(res, req.body);
 
-  return res.json({
+  return res.status(ResponseStatus.SUCCESS).json({
     success: true,
     message: "Login successful",
     data: result,
@@ -29,7 +30,7 @@ export const login = async (req: Request, res: Response) => {
 export const logout = async (req: Request, res: Response) => {
   res.clearCookie("token");
 
-  return res.json({
+  return res.status(ResponseStatus.SUCCESS).json({
     success: true,
     message: "Logout successful",
   });
@@ -38,7 +39,7 @@ export const logout = async (req: Request, res: Response) => {
 export const profile = async (req: Request, res: Response) => {
   const user = await AuthServices.getProfile(req?.authInfo?.userId ?? "");
 
-  return res.json({
+  return res.status(ResponseStatus.SUCCESS).json({
     success: true,
     message: "Profile retrieved successfully",
     data: user,
@@ -50,7 +51,7 @@ export const sendVerifyEmail = async (req: Request, res: Response) => {
     req.body as sendVerifyEmailType,
   );
 
-  return res.json({
+  return res.status(ResponseStatus.SUCCESS).json({
     success: true,
     message: "Verification mail send successful",
     data: result,
@@ -60,7 +61,7 @@ export const sendVerifyEmail = async (req: Request, res: Response) => {
 export const verifyEmail = async (req: Request, res: Response) => {
   const result = await AuthServices.verifyEmail(req.tokenInfo as IToken);
 
-  return res.json({
+  return res.status(ResponseStatus.SUCCESS).json({
     success: true,
     message: "Email verification successful",
     data: result,
@@ -73,7 +74,7 @@ export const changePassword = async (req: Request, res: Response) => {
     req.body,
   );
 
-  return res.json({
+  return res.status(ResponseStatus.SUCCESS).json({
     success: true,
     message: "Password change successful",
     data: result,
@@ -85,7 +86,7 @@ export const sendResetPasswordMail = async (req: Request, res: Response) => {
     req.authInfo?.email ?? req.body.email,
   );
 
-  return res.json({
+  return res.status(ResponseStatus.SUCCESS).json({
     success: true,
     message: "Password reset mail send successfully",
     data: result,
@@ -98,7 +99,7 @@ export const resetPassword = async (req: Request, res: Response) => {
     req.body,
   );
 
-  return res.json({
+  return res.status(ResponseStatus.SUCCESS).json({
     success: true,
     message: "Password reset successfully",
     data: result,

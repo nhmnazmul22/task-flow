@@ -1,4 +1,5 @@
 import { AppError } from "@/errors/appError.js";
+import ResponseStatus from "@/config/status.js";
 import { AsyncLocalStorage } from "node:async_hooks";
 
 type TenantContext = {
@@ -12,7 +13,7 @@ export function getTenantId(): string {
   const context = tenantContext.getStore();
 
   if (!context?.tenantId) {
-    throw new AppError(401, "Tenant context is missing");
+    throw new AppError(ResponseStatus.UNAUTHORIZED, "Tenant context is missing");
   }
 
   return context.tenantId;

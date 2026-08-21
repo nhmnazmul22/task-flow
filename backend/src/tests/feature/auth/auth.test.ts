@@ -1,3 +1,4 @@
+import ResponseStatus from "@/config/status.js";
 import app from "@/app.js";
 import { createUserData } from "@/tests/factory/auth.factory.js";
 import request from "supertest";
@@ -14,7 +15,7 @@ describe("Auth Feature Tests", () => {
       .send(payload);
 
     // Assert
-    expectResponse(response, 201);
+    expectResponse(response, ResponseStatus.CREATED);
     expect(response.body).toHaveProperty(
       "message",
       "User registered successfully",
@@ -32,7 +33,7 @@ describe("Auth Feature Tests", () => {
       .send(payload);
 
     // Assert
-    expectResponse(response, 201);
+    expectResponse(response, ResponseStatus.CREATED);
     expect(response.body).toEqual({
       success: true,
       message: "User registered successfully",

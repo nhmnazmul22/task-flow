@@ -9,6 +9,7 @@ import type {
 import type {UserType} from "@/types/users.js";
 import * as UserRepository from "@/repositories/user.repo.js";
 import {AppError} from "@/errors/appError.js";
+import ResponseStatus from "@/config/status.js";
 import {removeFiles} from "@/utils/upload.js";
 import {generateToken} from "@/lib/jwtToken.js";
 import type {Response} from "express";
@@ -42,7 +43,7 @@ export const register = async (payload: registerDataType) => {
         });
 
         if (existUser) {
-            throw new AppError(400, "Email already register with another account");
+            throw new AppError(ResponseStatus.BAD_REQUEST, "Email already register with another account");
         }
 
         const hashedPassword = await bcrypt.hash(payload.password, 10);
@@ -58,7 +59,7 @@ export const register = async (payload: registerDataType) => {
         const user = await UserRepository.createNewUser(data, session);
 
         if (!user) {
-            throw new AppError(500, "User creation failed");
+            throw new AppError(ResponseStatus.INTERNAL_SERVER_ERROR, "User creation failed");
         }
 
         // Create new Tenant from the user
@@ -91,7 +92,7 @@ export const login = async (res: Response, payload: loginDataType) => {
     });
 
     if (!user) {
-        throw new AppError(401, "Unauthorized");
+        throw new AppError(ResponseStatus.UNAUTHORIZED, "Unauthorized");
     }
 
     if (user && !user.isVerified) {
@@ -104,7 +105,7 @@ export const login = async (res: Response, payload: loginDataType) => {
     const isPasswordMatch = await bcrypt.compare(payload.password, user.password);
 
     if (!isPasswordMatch) {
-        throw new AppError(401, "Unauthorized");
+        throw new AppError(ResponseStatus.UNAUTHORIZED, "Unauthorized");
     }
 
     // Generate the token and return it along with user data
@@ -126,7 +127,7 @@ export const login = async (res: Response, payload: loginDataType) => {
 export const getProfile = async (userId: string) => {
     const user = await UserRepository.findUserById(userId);
     if (!user) {
-        throw new AppError(404, "User not found");
+        throw new AppError(ResponseStatus.NOT_FOUND, "User not found");
     }
     return user;
 };
@@ -153,7 +154,7 @@ export const sendMailForVerify = async ({
     const result = await sendMail(email, "Email Verification", html);
 
     if (result && !result.id) {
-        throw new AppError(500, "Verification mail send failed, try again.");
+        throw new AppError(ResponseStatus.INTERNAL_SERVER_ERROR, "Verification mail send failed, try again.");
     }
 
     return {
@@ -163,7 +164,7 @@ export const sendMailForVerify = async ({
 
 export const verifyEmail = async (tokenInfo: IToken) => {
     if (!tokenInfo.email) {
-        throw new AppError(400, "Invalid reset token");
+        throw new AppError(ResponseStatus.BAD_REQUEST, "Invalid reset token");
     }
 
     const tokenRecord = await TokenRepo.findOneByQuery({
@@ -172,11 +173,11 @@ export const verifyEmail = async (tokenInfo: IToken) => {
     });
 
     if (!tokenRecord) {
-        throw new AppError(400, "Invalid or expired verification token");
+        throw new AppError(ResponseStatus.BAD_REQUEST, "Invalid or expired verification token");
     }
 
     if (tokenRecord.expiresAt < new Date()) {
-        throw new AppError(400, "Verification token expired");
+        throw new AppError(ResponseStatus.BAD_REQUEST, "Verification token expired");
     }
 
     const user = await UserRepository.updateOne(
@@ -185,7 +186,7 @@ export const verifyEmail = async (tokenInfo: IToken) => {
     );
 
     if (!user) {
-        throw new AppError(404, "User not found");
+        throw new AppError(ResponseStatus.NOT_FOUND, "User not found");
     }
 
     return {
@@ -200,12 +201,12 @@ export const changePassword = async (
     const user = await UserRepository.findUserById(userId);
 
     if (!user) {
-        throw new AppError(404, "User not found");
+        throw new AppError(ResponseStatus.NOT_FOUND, "User not found");
     }
 
     const isPasswordCorrect = await bcrypt.compare(payload.oldPassword, user.password);
     if (!isPasswordCorrect) {
-        throw new AppError(422, "Old Password mismatch");
+        throw new AppError(ResponseStatus.UNPROCESSABLE_ENTITY, "Old Password mismatch");
     }
 
     user.password = await bcrypt.hash(payload.newPassword, 10);
@@ -215,7 +216,7 @@ export const changePassword = async (
 
 export const sendResetPasswordMail = async (email?: string) => {
     if (!email) {
-        throw new AppError(422, "Email is required to reset password");
+        throw new AppError(ResponseStatus.UNPROCESSABLE_ENTITY, "Email is required to reset password");
     }
 
     const tokenHash = generateHashToken();
@@ -235,7 +236,7 @@ export const sendResetPasswordMail = async (email?: string) => {
     const result = await sendMail(email, "Password Reset", html);
 
     if (result && !result.id) {
-        throw new AppError(500, "Password reset mail send failed, try again.");
+        throw new AppError(ResponseStatus.INTERNAL_SERVER_ERROR, "Password reset mail send failed, try again.");
     }
 
     return {
@@ -248,7 +249,7 @@ export const resetPassword = async (
     payload: passwordResetPayloadType,
 ) => {
     if (!tokenInfo.email) {
-        throw new AppError(400, "Invalid reset token");
+        throw new AppError(ResponseStatus.BAD_REQUEST, "Invalid reset token");
     }
 
     const hashedPassword = await bcrypt.hash(payload.newPassword, 10);
@@ -259,7 +260,7 @@ export const resetPassword = async (
     );
 
     if (!user) {
-        throw new AppError(404, "User not found");
+        throw new AppError(ResponseStatus.NOT_FOUND, "User not found");
     }
 
     return null;

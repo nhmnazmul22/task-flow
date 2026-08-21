@@ -1,3 +1,4 @@
+import ResponseStatus from "@/config/status.js";
 import app from "@/app.js";
 import {
   createAuthenticatedUser,
@@ -16,7 +17,7 @@ describe("GET /auth/me", () => {
       .set("Cookie", [cookie])
       .send();
 
-    expectResponse(response, 200);
+    expectResponse(response, ResponseStatus.SUCCESS);
     expect(response.body).toHaveProperty(
       "message",
       "Profile retrieved successfully",
@@ -28,7 +29,7 @@ describe("GET /auth/me", () => {
   it("should reject request without auth token", async () => {
     const response = await request(app).get("/auth/me").send();
 
-    expectResponse(response, 401);
+    expectResponse(response, ResponseStatus.UNAUTHORIZED);
     expect(response.body).toHaveProperty("message", "Unauthorized");
   });
 
@@ -38,7 +39,7 @@ describe("GET /auth/me", () => {
       .set("Cookie", ["authToken=invalid-token-value"])
       .send();
 
-    expectResponse(response, 401);
+    expectResponse(response, ResponseStatus.UNAUTHORIZED);
     expect(response.body).toHaveProperty("message", "Unauthorized");
   });
 
@@ -48,6 +49,6 @@ describe("GET /auth/me", () => {
       .set("Cookie", ["authToken="])
       .send();
 
-    expectResponse(response, 401);
+    expectResponse(response, ResponseStatus.UNAUTHORIZED);
   });
 });
