@@ -1,32 +1,26 @@
-import mongoose, { Model, Schema } from "mongoose";
-import type { ITenant } from "@/types/tenant.js";
+import mongoose, {Model, Schema} from "mongoose";
+import type {ITenant} from "@/types/tenant.js";
 
 const TenantSchema = new Schema<ITenant>(
-  {
-    ownerId: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-      required: false,
-      default: null,
+    {
+        ownerId: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+            required: false,
+            default: null,
+        },
+        name: {
+            type: String,
+            required: true,
+        },
     },
-    name: {
-      type: String,
-      required: true,
+    {
+        timestamps: true,
+        versionKey: false,
     },
-    users: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
-  },
-  {
-    timestamps: true,
-    versionKey: false,
-  },
 );
 
 const TenantModel: Model<ITenant> =
-  mongoose.models.Tenant ?? mongoose.model<ITenant>("Tenant", TenantSchema);
+    mongoose.models.Tenant ?? mongoose.model<ITenant>("Tenant", TenantSchema);
 
 export default TenantModel;

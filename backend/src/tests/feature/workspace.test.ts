@@ -64,8 +64,8 @@ describe("PUT: /workspaces/update/:id", () => {
         const {authCookies, userInfo} = await getAuth();
 
         const existingWorkspace = await createNewWorkspace({
-            ownerId: userInfo._id.toString(),
-            tenantId: userInfo.tenantId as string
+            owner: userInfo._id.toString(),
+            tenant: userInfo.tenantId as string
         });
 
         const payload = {

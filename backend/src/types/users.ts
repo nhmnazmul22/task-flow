@@ -1,6 +1,6 @@
 import type {HydratedDocument} from "mongoose";
 
-export enum UserRoleType {
+export enum UserRoleEnum {
     ADMIN = 'admin',
     USER = 'user'
 }
@@ -9,7 +9,7 @@ export enum UserRoleType {
 export interface UserType {
     fullName: string;
     email: string;
-    role: UserRoleType;
+    role: UserRoleEnum;
     password: string;
     tenantId?: string;
     avatarUrl?: string;

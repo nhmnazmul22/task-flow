@@ -1,4 +1,4 @@
-import type {UserType} from "@/types/users.js";
+import {UserRoleEnum, type UserType} from "@/types/users.js";
 import mongoose, {Model, Schema} from "mongoose";
 
 const UserSchema = new Schema<UserType>(
@@ -20,8 +20,8 @@ const UserSchema = new Schema<UserType>(
 
         role: {
             type: String,
-            enum: ["admin", "user"],
-            default: "user",
+            enum: Object.values(UserRoleEnum),
+            default: UserRoleEnum.USER,
         },
 
         password: {
